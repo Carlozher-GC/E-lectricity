@@ -1,0 +1,75 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  invoice_number: MyString
+  invoice_reference: MyString
+  invoice_release_data: MyString
+  start_billing_date: 2022-03-12 23:40:31
+  end_billing_date: 2022-03-12 23:40:31
+  total_billing_days: 1
+  days_per_year: 1
+  last_energy_consumption: 1
+  current_energy_consumption: 1
+  energy_consumption_delta: 1
+  contracted_power_price: 1
+  consumed_energy_price: 1
+  subtotal_1: 1
+  electricity_tax: 1
+  equipment_rental_price: 1
+  subtotal_2: 1
+  total_price: 1
+  access_toll_rate: 1
+  access_toll_price: 1
+  marketer_cost_rate: 1
+  marketer_cost_price: 1
+  contracted_power_rate: 1
+  access_toll_energy_rate: 1
+  access_toll_energy_price: 1
+  energy_cost_rate: 1
+  energy_cost_price: 1
+  energy_rate: 1
+  energy_price: 1
+  equipment_price_per_day: 1
+  electricity_tax_rate: 1
+  subtotal_tax_equipment: 1
+  normal_tax_rate: 1
+  reduced_tax_rate: 1
+  reduced_tax_price: 1
+  total_plus_tax: 1
+
+two:
+  invoice_number: MyString
+  invoice_reference: MyString
+  invoice_release_data: MyString
+  start_billing_date: 2022-03-12 23:40:31
+  end_billing_date: 2022-03-12 23:40:31
+  total_billing_days: 1
+  days_per_year: 1
+  last_energy_consumption: 1
+  current_energy_consumption: 1
+  energy_consumption_delta: 1
+  contracted_power_price: 1
+  consumed_energy_price: 1
+  subtotal_1: 1
+  electricity_tax: 1
+  equipment_rental_price: 1
+  subtotal_2: 1
+  total_price: 1
+  access_toll_rate: 1
+  access_toll_price: 1
+  marketer_cost_rate: 1
+  marketer_cost_price: 1
+  contracted_power_rate: 1
+  access_toll_energy_rate: 1
+  access_toll_energy_price: 1
+  energy_cost_rate: 1
+  energy_cost_price: 1
+  energy_rate: 1
+  energy_price: 1
+  equipment_price_per_day: 1
+  electricity_tax_rate: 1
+  subtotal_tax_equipment: 1
+  normal_tax_rate: 1
+  reduced_tax_rate: 1
+  reduced_tax_price: 1
+  total_plus_tax: 1
