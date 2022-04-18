@@ -1,7 +1,7 @@
 <template>
     <div>
-        <b-navbar toggleable="lg" type="dark" variant="info">
-            <b-navbar-brand href="#">NavBar</b-navbar-brand>
+        <b-navbar toggleable="lg" type="dark" style="background-color: purple;">
+            <b-navbar-brand href="#">E-lectricity</b-navbar-brand>
 
             <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
@@ -18,17 +18,10 @@
                 <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
                 </b-nav-form>
 
-                <b-nav-item-dropdown text="Lang" right>
-                <b-dropdown-item href="#">EN</b-dropdown-item>
-                <b-dropdown-item href="#">ES</b-dropdown-item>
-                <b-dropdown-item href="#">RU</b-dropdown-item>
-                <b-dropdown-item href="#">FA</b-dropdown-item>
-                </b-nav-item-dropdown>
-
                 <b-nav-item-dropdown right>
                 <!-- Using 'button-content' slot -->
                 <template #button-content>
-                    <em>User</em>
+                    <em>Hola</em>
                 </template>
                 <b-dropdown-item href="#">Profile</b-dropdown-item>
                 <b-dropdown-item href="#">Sign Out</b-dropdown-item>
@@ -40,8 +33,20 @@
 </template>
 
 <script>
-
 export default {
-
+    props: ['currentUser'],
+    data() {
+        return {
+            
+        }
+    },
+    mounted() {
+        this.fetchData();
+    },
+    methods: {
+        fetchData() {
+            console.log(this.currentUser);
+        }
+    }
 }
 </script>

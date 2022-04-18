@@ -2,7 +2,6 @@
 <html>
   <head>
     <title>ELectricity</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -10,11 +9,14 @@
 
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#6f42c1">
   </head>
 
-  <body>
-    <div id='main_header'></div>
-    <div id='main_container'>
+  <body class="text-center">
+    <div id="main_header"></div>
+    <div class="container" id="main_container">
       <%= yield %>
     </div>
   </body>

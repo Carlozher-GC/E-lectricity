@@ -11,6 +11,7 @@ import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue';
 
 import App from '../vue/app.vue';
 import router from '../vue/router.js';
+import store from "../vue/store.js";
 
 Vue.use(Vuex);
 
@@ -18,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
   Vue.use(BootstrapVue);
   Vue.use(BootstrapVueIcons);
   new Vue({
+    store,
     render: h => h(App),
     router
   }).$mount('#main_header')

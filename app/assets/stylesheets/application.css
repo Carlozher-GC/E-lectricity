@@ -12,4 +12,49 @@
  *
  *= require_tree .
  *= require_self
- */
+*/
+
+html, body {
+    height: 90%;
+    margin: 0px;
+}
+
+.container {
+    max-width: 80%;
+    height: 100%;
+    padding-left: 0px;
+}
+
+.rounded-button {
+    padding: 0px !important;
+    vertical-align: middle;
+    background-color: purple;
+    border-color: transparent;
+    color: white;
+    height: 48px !important;
+    text-transform: none !important;
+    border-radius: 28px !important;
+    width: 100%;
+}
+
+.rounded-input {
+    padding: 0 10px;
+    vertical-align: middle;
+    height: 48px !important;
+    text-transform: none !important;
+    border-radius: 5px !important;
+    width: 100%;
+    background-color: rgb(235, 222, 247);
+    border-color: transparent;
+}
+
+input:focus {
+    outline: none !important;
+    border:1px solid purple;
+    box-shadow: 0 0 10px #719ECE;
+}
+
+.error-message {
+    color: red;
+    font-size: 13px;
+}
