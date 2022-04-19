@@ -23,25 +23,35 @@
                 :disabled="invoice === null"
             >Confirmar selección</b-button>
         </b-card>
-        <b-card title="Revisar factura" v-else>
+        <b-card v-else>
+            <b-card-title>
+                <b-row>
+                    <b-col cols="2">
+                        <b-button class="back-button" @click="resetForm()"><b-icon icon="arrow-left"></b-icon></b-button>
+                    </b-col>
+                    <b-col cols="8">
+                        <p>Revisar factura</p>
+                    </b-col>
+                    <b-col cols="2">
+                        &nbsp;
+                    </b-col>
+                </b-row>
+                <hr>
+            </b-card-title>
+            <b-alert :show="error !== ''" variant="danger">{{ error }}</b-alert>
             <b-container>
                 <b-row>
-                    <b-col cols="6" v-for="key in Object.keys(parsedInvoice)" :key="key" class="invoice-field">
+                    <b-col cols="6" v-for="field in Object.keys(parsedInvoice)" :key="field" class="invoice-field">
                         <b-row>
-                            <b-col cols="5">
-                                <strong class="field-name">{{ formatFieldName(key) }}:</strong>
+                            <b-col cols="6">
+                                <strong class="field-name">{{ formatFieldName(field) }}:</strong>
                             </b-col>
-                            <b-col cols="7">
-                                <b-input-group>
-                                    <b-form-input 
-                                        type="text"
-                                        v-model="parsedInvoice[key]"
-                                    >
-                                    </b-form-input>
-                                    <b-input-group-append is-text :title="'Edit ' + formatFieldName(key)">
-                                        <b-icon icon="pencil-square"></b-icon>
-                                    </b-input-group-append>
-                                </b-input-group>
+                            <b-col cols="6">
+                                <b-form-input 
+                                    :type="determineFieldType(field)"
+                                    v-model="parsedInvoice[field]"
+                                >
+                                </b-form-input>
                             </b-col>
                         </b-row>
                     </b-col>
@@ -53,18 +63,15 @@
 
 <script>
 import axios from "axios";
-import EditableField from '../components/EditableField.vue';
 
 export default {
-    components: {
-        EditableField
-    },
     data() {
         return {
             invoiceUploaded: false,
             invoice: null,
             parsedInvoice: null,
-            error: ''
+            error: '',
+            fieldsByType: null,
         }
     },
     mounted() {
@@ -85,6 +92,7 @@ export default {
                 const response = await axios.post('/read_invoice', formData, config);
                 if (response.data.success == 'true') {
                     this.parsedInvoice = response.data.invoice;
+                    this.fieldsByType = response.data.fields_by_type;
                     this.invoiceUploaded = true;
                 } else {
                     this.invoice = null;
@@ -97,6 +105,12 @@ export default {
                 this.error = error;
             }
         },
+        resetForm() {
+            this.error = null;
+            this.invoice = null;
+            this.invoiceUploaded = false;
+            this.parsedInvoice = null;
+        },
         formatFieldName(name) {
             let formattedName = '';
             if (name.indexOf('_') >= 0) {
@@ -108,6 +122,14 @@ export default {
                 return formattedName.trim();
             }
             return name;
+        },
+        determineFieldType(field) {
+            for (const [type, fields] of Object.entries(this.fieldsByType)) {
+                if (fields.indexOf(field) > -1) {
+                    return type;
+                }
+            }
+            return 'text';
         }
     }
 }
@@ -143,6 +165,11 @@ export default {
 
     .field-name {
         color: black;
-        font-size: 0.7em;
+        font-size: 0.82em;
+    }
+
+    .back-button {
+        background-color: purple;
+        margin-left: 0px;
     }
 </style>

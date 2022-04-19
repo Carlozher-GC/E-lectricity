@@ -3,7 +3,7 @@ SESSION_LENGTH_IN_SECONDS = 30 * 60
 INVOICE_KEYS = {
     'F1': :invoice_number,
     'F2': :invoice_reference,
-    'F3': :invoice_release_data,
+    'F3': :invoice_release_date,
     'F4': :start_billing_date,
     'F5': :end_billing_date,
     'F6': :total_billing_days,
@@ -37,4 +37,27 @@ INVOICE_KEYS = {
     'N5': :reduced_tax_price,
     'N6': :reduced_tax_rate,
     'N7': :total_plus_tax
+}.freeze
+
+# Any other field not included here will be considered as float
+INVOICE_FIELDS_BY_TYPES = {
+    'date': %i[invoice_release_date start_billing_date end_billing_date],
+    'number': %i[total_billing_days energy_consumption_delta last_energy_consumption current_energy_consumption days_per_year],
+    'text': %i[invoice_number invoice_reference normal_tax_rate reduced_tax_rate electricity_tax_rate]
+}.freeze
+
+# Months
+MONTHS = {
+    'enero': 1,
+    'febrero': 2,
+    'marzo': 3,
+    'arbil': 4,
+    'mayo': 5,
+    'junio': 6,
+    'julio': 7,
+    'agosto': 8,
+    'septiembre': 9,
+    'octubre': 10,
+    'noviembre': 11,
+    'diciembre': 12,
 }.freeze

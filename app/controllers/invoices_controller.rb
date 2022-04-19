@@ -1,4 +1,5 @@
 require 'errors'
+require 'constants'
 
 class InvoicesController < ApplicationController
     before_action :set_invoice, only: %i[show edit update]
@@ -12,7 +13,7 @@ class InvoicesController < ApplicationController
     def new
         if params[:invoice].present?
             begin
-                render json: { success: 'true', invoice: read_invoice }
+                render json: { success: 'true', invoice: read_invoice, fields_by_type: INVOICE_FIELDS_BY_TYPES }
             rescue StandardError => e
                 render json: { success: 'false', reason: READ_INVOICE_ERROR, details: e }
             end
