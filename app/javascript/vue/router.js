@@ -1,8 +1,9 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
-import UserProfile from './views/UserProfile.vue';
-import UploadInvoice from './views/UploadInvoice.vue';
+import UserProfile from './views/users/UserProfile.vue';
+import UploadInvoice from './views/invoices/UploadInvoice.vue';
+import ShowInvoice from './views/invoices/ShowInvoice.vue';
 
 Vue.use(VueRouter);
 
@@ -11,7 +12,8 @@ const router = new VueRouter({
     base: '#',
     routes: [
         { path: '/profile', component: UserProfile, name: 'UserProfile' },
-        { path: '/upload_invoice', component: UploadInvoice, name: 'UploadInvoice'}
+        { path: '/upload_invoice', component: UploadInvoice, name: 'UploadInvoice' },
+        { path: '/invoice/:id', component: ShowInvoice, name: 'ShowInvoice' }
     ]
 });
 

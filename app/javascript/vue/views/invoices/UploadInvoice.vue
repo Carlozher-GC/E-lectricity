@@ -47,22 +47,49 @@
                                 <strong class="field-name">{{ formatFieldName(field) }}:</strong>
                             </b-col>
                             <b-col cols="6">
-                                <b-form-input 
-                                    :type="determineFieldType(field)"
-                                    v-model="parsedInvoice[field]"
-                                >
-                                </b-form-input>
+                                <b-input-group>
+                                    <b-form-input 
+                                        :type="determineFieldType(field)"
+                                        v-model="parsedInvoice[field]"
+                                    >
+                                    </b-form-input>
+                                    <b-input-group-append is-text v-if="determineFieldUnit(field) !== null">
+                                        {{ determineFieldUnit(field) }}
+                                    </b-input-group-append>
+                                </b-input-group>
                             </b-col>
                         </b-row>
                     </b-col>
                 </b-row>
+                <b-row style="padding-top: 20px; text-align: center">
+                    <b-col>
+                        <b-button 
+                            @click="uploadInvoice"
+                            class="confirm-button upload-file-button"
+                            style="background-color: purple"
+                        >
+                            Subir factura
+                        </b-button>
+                    </b-col>
+                    <b-col>
+                        <b-button 
+                            @click="resetForm"
+                            class="confirm-button upload-file-button"
+                            style="background-color: purple"
+                        >
+                            Cancelar
+                        </b-button>
+                    </b-col>
+                </b-row>
             </b-container>
+
         </b-card>
     </div>
 </template>
 
 <script>
 import axios from "axios";
+import ShowInvoiceVue from './ShowInvoice.vue';
 
 export default {
     data() {
@@ -93,6 +120,7 @@ export default {
                 if (response.data.success == 'true') {
                     this.parsedInvoice = response.data.invoice;
                     this.fieldsByType = response.data.fields_by_type;
+                    this.fieldsByUnit = response.data.fields_by_unit;
                     this.invoiceUploaded = true;
                 } else {
                     this.invoice = null;
@@ -105,11 +133,33 @@ export default {
                 this.error = error;
             }
         },
+        async uploadInvoice() {
+            this.error = '';
+            try {
+                axios.defaults.headers.common["X-CSRF-Token"] = document
+                    .querySelector('meta[name="csrf-token"]')
+                    .getAttribute('content');
+                const params = { invoice: this.parsedInvoice };
+                const response = await axios.post('/upload_invoice', params);
+                if (response.data.success == 'true') {
+                    this.$router.push(
+                        { name: 'ShowInvoice', params: { id: response.data.id } }
+                    );
+                } else {
+                    this.error = response.data.reason.message + ':\n' + response.data.details;
+                    window.scrollTo(0,0);
+                }
+            } catch (error) {
+                this.error = error;
+                window.scrollTo(0,0);
+            }
+        },
         resetForm() {
-            this.error = null;
+            this.error = '';
             this.invoice = null;
             this.invoiceUploaded = false;
             this.parsedInvoice = null;
+            window.scrollTo(0,0);
         },
         formatFieldName(name) {
             let formattedName = '';
@@ -130,6 +180,14 @@ export default {
                 }
             }
             return 'text';
+        },
+        determineFieldUnit(field) {
+            for (const [unit, fields] of Object.entries(this.fieldsByUnit)) {
+                if (fields.indexOf(field) > -1) {
+                    return unit;
+                }
+            } 
+            return null;
         }
     }
 }
@@ -145,6 +203,10 @@ export default {
     .upload-file-input {
         padding-top: 5%;
         width: 70%;
+    }
+
+    .upload-file-button {
+        max-width: 60%;
     }
 
     .confirm-button {

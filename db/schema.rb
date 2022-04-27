@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_03_12_224031) do
+ActiveRecord::Schema.define(version: 2022_04_27_001031) do
 
   create_table "invoices", force: :cascade do |t|
     t.string "invoice_number"
     t.string "invoice_reference"
-    t.string "invoice_release_data"
+    t.datetime "invoice_release_date"
     t.datetime "start_billing_date"
     t.datetime "end_billing_date"
     t.integer "total_billing_days"
@@ -23,33 +23,35 @@ ActiveRecord::Schema.define(version: 2022_03_12_224031) do
     t.integer "last_energy_consumption"
     t.integer "current_energy_consumption"
     t.integer "energy_consumption_delta"
-    t.integer "contracted_power_price"
-    t.integer "consumed_energy_price"
-    t.integer "subtotal_1"
-    t.integer "electricity_tax"
-    t.integer "equipment_rental_price"
-    t.integer "subtotal_2"
-    t.integer "total_price"
-    t.integer "access_toll_rate"
-    t.integer "access_toll_price"
-    t.integer "marketer_cost_rate"
-    t.integer "marketer_cost_price"
+    t.decimal "contracted_power_price"
+    t.decimal "consumed_energy_price"
+    t.decimal "subtotal_1"
+    t.decimal "electricity_tax"
+    t.decimal "equipment_rental_price"
+    t.decimal "subtotal_2"
+    t.decimal "total_price"
+    t.decimal "access_toll_rate"
+    t.decimal "access_toll_price"
+    t.decimal "marketer_cost_rate"
+    t.decimal "marketer_cost_price"
     t.integer "contracted_power_rate"
-    t.integer "access_toll_energy_rate"
-    t.integer "access_toll_energy_price"
-    t.integer "energy_cost_rate"
-    t.integer "energy_cost_price"
-    t.integer "energy_rate"
-    t.integer "energy_price"
-    t.integer "equipment_price_per_day"
-    t.integer "electricity_tax_rate"
-    t.integer "subtotal_tax_equipment"
+    t.decimal "access_toll_energy_rate"
+    t.decimal "access_toll_energy_price"
+    t.decimal "energy_cost_rate"
+    t.decimal "energy_cost_price"
+    t.decimal "energy_rate"
+    t.decimal "energy_price"
+    t.decimal "equipment_price_per_day"
+    t.decimal "electricity_tax_rate"
+    t.decimal "subtotal_tax_equipment"
     t.integer "normal_tax_rate"
     t.integer "reduced_tax_rate"
-    t.integer "reduced_tax_price"
-    t.integer "total_plus_tax"
+    t.decimal "reduced_tax_price"
+    t.decimal "total_plus_tax"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "user_id"
+    t.index ["user_id"], name: "index_invoices_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -66,6 +68,10 @@ ActiveRecord::Schema.define(version: 2022_03_12_224031) do
     t.string "encrypted_password"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "city"
+    t.string "region"
+    t.datetime "birthday"
   end
 
+  add_foreign_key "invoices", "users"
 end

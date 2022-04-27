@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+    has_many :invoices, dependent: :destroy
+
     before_save { email.downcase! }
 
     validates :first_name, presence: true

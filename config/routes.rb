@@ -2,8 +2,9 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   root to: 'sessions#new'
 
-  resources :invoices, except: %i[new]
+  resources :invoices, except: %i[new create]
   post '/read_invoice',               to: 'invoices#new',         as: 'read_invoice'
+  post '/upload_invoice',             to: 'invoices#create',      as: 'upload_invoice'
 
   # Paths for creating/destroying sessions
   get '/login',                       to: 'sessions#new',         as: 'login'

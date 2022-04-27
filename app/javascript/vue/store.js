@@ -8,7 +8,8 @@ export default new Vuex.Store({
     state: {
         vueRoutes: [
             '/profile',
-            '/upload_invoice'
+            '/upload_invoice',
+            '/invoices'
         ],
         currentUser: {}
     },
@@ -22,6 +23,9 @@ export default new Vuex.Store({
     },
     actions: {
         async loadCurrentUser({ commit }) {
+            axios.defaults.headers.common["X-CSRF-Token"] = document
+                    .querySelector('meta[name="csrf-token"]')
+                    .getAttribute('content');
             await axios.get('/current_user').then((response) => {
                 return commit('SAVE_CURRENT_USER', response.data);
             }).catch(() => {

@@ -20,6 +20,7 @@ class UsersController < ApplicationController
 
     def new
         @user = User.new
+        @user.role = User.roles[:customer]
     end
 
     def show

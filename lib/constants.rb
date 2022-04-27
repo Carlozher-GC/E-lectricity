@@ -40,10 +40,21 @@ INVOICE_KEYS = {
 }.freeze
 
 # Any other field not included here will be considered as float
-INVOICE_FIELDS_BY_TYPES = {
+INVOICE_FIELDS_BY_TYPE = {
     'date': %i[invoice_release_date start_billing_date end_billing_date],
     'number': %i[total_billing_days energy_consumption_delta last_energy_consumption current_energy_consumption days_per_year],
     'text': %i[invoice_number invoice_reference normal_tax_rate reduced_tax_rate electricity_tax_rate]
+}.freeze
+
+# Any other field not included won´t have a unit assigned
+INVOICE_FIELDS_BY_UNIT = {
+    '€': %i[energy_price energy_cost_price subtotal_tax_equipment subtotal_2 subtotal_1 total_plus_tax 
+            total_price access_toll_energy_price marketer_cost_price reduced_tax_price equipment_price_per_day
+            consumed_energy_price equipment_rental_price contracted_power_price access_toll_price electricity_tax],
+    '%': %i[normal_tax_rate reduced_tax_rate electricity_tax_rate],
+    'kWh': %i[last_energy_consumption current_energy_consumption energy_consumption_delta],
+    '€/kWh': %i[access_toll_energy_rate energy_cost_rate],
+    '€/kW': %i[marketer_cost_rate access_toll_rate]
 }.freeze
 
 # Months

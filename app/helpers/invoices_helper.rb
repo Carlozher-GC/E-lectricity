@@ -16,7 +16,7 @@ module InvoicesHelper
         translated_invoice = {}
         invoice.each do |key, value|
             if INVOICE_KEYS.has_key?(key)
-                if INVOICE_FIELDS_BY_TYPES[:date].include?(INVOICE_KEYS[key])
+                if INVOICE_FIELDS_BY_TYPE[:date].include?(INVOICE_KEYS[key])
                     translated_invoice[INVOICE_KEYS[key]] = parse_date(value)
                 else
                     translated_invoice[INVOICE_KEYS[key]] = value

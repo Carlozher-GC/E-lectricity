@@ -8,11 +8,9 @@
 </template>
 
 <script>
-import EditableField from '../components/EditableField.vue';
 
 export default {
     components: {
-        EditableField
     },
     data() {
         return {
