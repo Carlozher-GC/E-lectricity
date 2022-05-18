@@ -89,7 +89,6 @@
 
 <script>
 import axios from "axios";
-import ShowInvoiceVue from './ShowInvoice.vue';
 
 export default {
     data() {
@@ -143,7 +142,7 @@ export default {
                 const response = await axios.post('/upload_invoice', params);
                 if (response.data.success == 'true') {
                     this.$router.push(
-                        { name: 'ShowInvoice', params: { id: response.data.id } }
+                        { name: 'ShowInvoice', params: { id: response.data.invoice_id } }
                     );
                 } else {
                     this.error = response.data.reason.message + ':\n' + response.data.details;

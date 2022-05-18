@@ -5,13 +5,14 @@ require 'constants'
 
 class ApplicationController < ActionController::Base
     protect_from_forgery with: :exception
-    
+    protect_from_forgery prepend: true
+
     before_action :authenticated?
 
     def authenticated?
         update_access_time and return true unless expired_session?
 
-        redirect_to(login_path(error: SESSION_EXPIRED_ERROR))
+        redirect_to(logout_path(error: SESSION_EXPIRED_ERROR))
     end
 
     private

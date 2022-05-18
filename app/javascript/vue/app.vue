@@ -50,7 +50,10 @@ export default {
     }
   },
   mounted() {
-    this.fetchData();
+    this.$nextTick(function() {
+      if (!this.excludedRoute)
+        this.fetchData();
+    });
   },
   updated() {
     this.$nextTick(function() {

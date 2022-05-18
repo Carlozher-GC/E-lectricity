@@ -37,11 +37,12 @@ class InvoicesController < ApplicationController
         end
     end
 
-    def show; end
+    def show
+        render json: { success: 'true', invoice: @invoice }
+    end
 
     def index
-        #@invoices = Invoice.where(user_id: session[:user_id])
-        @invoices = Invoice.all
+        @invoices = Invoice.where(user_id: session[:user_id])
     end
 
     def edit; end
@@ -53,7 +54,7 @@ class InvoicesController < ApplicationController
     private
 
     def set_invoice
-        @invoice = Invoice.find(params[:invoice_id])
+        @invoice = Invoice.find(params[:id])
     end
 
     def invoice_params
