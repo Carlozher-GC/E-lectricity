@@ -8,7 +8,7 @@
 
             <b-collapse id="nav-collapse" is-nav>
             <b-navbar-nav>
-                <b-nav-item href="/invoices">Facturas</b-nav-item>
+                <b-nav-item :to="{ name: 'InvoicesIndex' }">Mis facturas</b-nav-item>
                 <b-nav-item :to="{ name: 'UploadInvoice' }">Subir factura</b-nav-item>
             </b-navbar-nav>
 

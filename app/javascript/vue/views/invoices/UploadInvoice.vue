@@ -98,6 +98,7 @@ export default {
             parsedInvoice: null,
             error: '',
             fieldsByType: null,
+            fieldsByUnit: null,
         }
     },
     mounted() {

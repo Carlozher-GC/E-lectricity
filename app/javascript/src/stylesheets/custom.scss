@@ -1,0 +1,31 @@
+.outline-purple {
+    color: purple !important;
+    border-color: purple !important;
+    background-color: white !important;
+}
+
+.outline-purple:hover {
+    color: white !important;
+    background-color: purple !important;
+}
+
+.table-header {
+    color: purple;
+}
+
+.show-button:hover {
+    border-color: purple;
+}
+
+.filter-container {
+    padding-bottom: 0px;
+}
+
+.underlinable-text {
+    color: purple;
+    cursor: pointer;
+}
+
+.underlinable-text:hover {
+    text-decoration: underline;
+}

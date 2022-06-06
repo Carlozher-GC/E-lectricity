@@ -38,11 +38,20 @@ class InvoicesController < ApplicationController
     end
 
     def show
-        render json: { success: 'true', invoice: @invoice }
+        render json: {
+            success: 'true',
+            invoice: @invoice,
+            fields_by_unit: INVOICE_FIELDS_BY_UNIT
+        }
     end
 
     def index
-        @invoices = Invoice.where(user_id: session[:user_id])
+        render json: { 
+            success: 'true',
+            invoices: Invoice.where(user_id: session[:user_id]),
+            fields_by_unit: INVOICE_FIELDS_BY_UNIT,
+            months: MONTHS.keys
+        }
     end
 
     def edit; end

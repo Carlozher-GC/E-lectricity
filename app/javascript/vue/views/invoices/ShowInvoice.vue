@@ -1,5 +1,9 @@
 <template>
     <div>
+        <div>
+            <b-alert :show="error !== ''" variant="danger">{{ error }}</b-alert>
+        </div>
+        <h1 style="color: purple">Factura Nº {{ invoice.invoice_number }}</h1>
         Hola {{ invoice }}
         Error: {{ error }}
     </div>
@@ -14,7 +18,8 @@ export default {
     data() {
         return {
             user: {},
-            invoice:{},
+            invoice: {},
+            fieldsByUnit: null,
             error: ''
         }
     },
@@ -23,6 +28,7 @@ export default {
     },
     methods: {
         async fetchData() {
+            this.error = '';
             this.user = this.$store.state.currentUser;
             try {
                 axios.defaults.headers.common["X-CSRF-Token"] = document
@@ -31,6 +37,7 @@ export default {
                 const response = await axios.get(`/invoices/${this.$route.params.id}`);
                 if (response.data.success == 'true') {
                     this.invoice = response.data.invoice;
+                    this.fieldsByUnit = response.data.fields_by_unit;
                 } else {
                     this.error = response.data.reason.message;
                 }
