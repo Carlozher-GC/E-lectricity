@@ -72,19 +72,19 @@ export default {
     },
     data() {
         return {
-            chartData: {
-                labels: [],
-                datasets: []
-            },
             chartOptions: {
                 responsive: true,
                 maintainAspectRatio: false
             }
         }
     },
-    mounted() {
-        this.chartData.labels = this.labels;
-        this.chartData.datasets = this.datasets;
-    }
+    computed: {
+        chartData: function() { 
+            return {
+                labels: this.labels,
+                datasets: this.datasets
+            }
+        },
+    },
 }
 </script>

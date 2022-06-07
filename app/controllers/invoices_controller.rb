@@ -23,12 +23,21 @@ class InvoicesController < ApplicationController
     def new
         if params[:invoice].present?
             begin
-                render json: { 
-                               success: 'true',
-                               invoice: read_invoice,
-                               fields_by_type: INVOICE_FIELDS_BY_TYPE,
-                               fields_by_unit: INVOICE_FIELDS_BY_UNIT
-                             }
+                invoice = read_invoice
+                if Invoice.find_by(invoice_number: invoice[:invoice_number]).blank?
+                    render json: { 
+                                success: 'true',
+                                invoice: invoice,
+                                fields_by_type: INVOICE_FIELDS_BY_TYPE,
+                                fields_by_unit: INVOICE_FIELDS_BY_UNIT
+                    }
+                else
+                    render json: { 
+                        success: 'false', 
+                        reason: CREATE_INVOICE_ERROR,
+                        details: 'This invoice has already been uploaded'
+                    }
+                end
             rescue StandardError => e
                 render json: { success: 'false', reason: READ_INVOICE_ERROR, details: e }
             end
