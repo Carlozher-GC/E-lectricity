@@ -1,6 +1,12 @@
 require 'constants'
 
 module InvoicesHelper
+    def read_invoice
+        if is_json?(params[:invoice].original_filename)
+            translate_invoice(parse_invoice(params[:invoice]))
+        end
+    end
+
     def is_json?(filename)
         extension = filename[(filename.index('.')), filename.length]
         extension == '.json'

@@ -8,7 +8,7 @@ class InvoicesController < ApplicationController
 
     def create
         @invoice = Invoice.new(invoice_params)
-        @invoice.user_id = session[:user_id]
+        @invoice.contract_id = params[:contract_id]
         if @invoice.save
             render json: { success: 'true', invoice_id: @invoice.id }
         else
@@ -23,21 +23,12 @@ class InvoicesController < ApplicationController
     def new
         if params[:invoice].present?
             begin
-                invoice = read_invoice
-                if Invoice.find_by(invoice_number: invoice[:invoice_number]).blank?
-                    render json: { 
-                                success: 'true',
-                                invoice: invoice,
-                                fields_by_type: INVOICE_FIELDS_BY_TYPE,
-                                fields_by_unit: INVOICE_FIELDS_BY_UNIT
-                    }
-                else
-                    render json: { 
-                        success: 'false', 
-                        reason: CREATE_INVOICE_ERROR,
-                        details: 'This invoice has already been uploaded'
-                    }
-                end
+                render json: { 
+                               success: 'true',
+                               invoice: read_invoice,
+                               fields_by_type: INVOICE_FIELDS_BY_TYPE,
+                               fields_by_unit: INVOICE_FIELDS_BY_UNIT
+                             }
             rescue StandardError => e
                 render json: { success: 'false', reason: READ_INVOICE_ERROR, details: e }
             end
@@ -55,12 +46,16 @@ class InvoicesController < ApplicationController
     end
 
     def index
-        render json: { 
-            success: 'true',
-            invoices: Invoice.where(user_id: session[:user_id]),
-            fields_by_unit: INVOICE_FIELDS_BY_UNIT,
-            months: MONTHS.keys
-        }
+        if params[:contract_id].present?
+            render json: { 
+                success: 'true',
+                invoices: Invoice.where(contract_id: params[:contract_id]),
+                fields_by_unit: INVOICE_FIELDS_BY_UNIT,
+                months: MONTHS.keys
+            }
+        else
+            render json: { success: 'false', reason: BAD_PARAMETERS }
+        end
     end
 
     def edit; end
@@ -90,11 +85,5 @@ class InvoicesController < ApplicationController
             :subtotal_tax_equipment, :normal_tax_rate, :reduced_tax_rate,
             :reduced_tax_price, :total_plus_tax
         )
-    end
-
-    def read_invoice
-        if is_json?(params[:invoice].original_filename)
-            translate_invoice(parse_invoice(params[:invoice]))
-        end
     end
 end

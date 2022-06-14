@@ -13,7 +13,7 @@ class SessionsController < ApplicationController
     def create
         if correct_credentials?
             if create_session
-                redirect_to('/#/invoices')
+                redirect_to('/#/contracts')
             else
                 redirect_to(login_path(error: ACCOUNT_BLOCKED_ERROR))
             end

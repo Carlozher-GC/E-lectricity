@@ -9,7 +9,9 @@ export default new Vuex.Store({
         vueRoutes: [
             '/profile',
             '/upload_invoice',
-            '/invoices'
+            '/invoices',
+            '/add_contract',
+            '/contracts',
         ],
         currentUser: {}
     },

@@ -23,7 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
     render: h => h(App),
     router
   }).$mount('#main_header')
-  // document.body.appendChild(app.$el)
 })
 
 

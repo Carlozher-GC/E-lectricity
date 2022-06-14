@@ -8,7 +8,8 @@
 
             <b-collapse id="nav-collapse" is-nav>
             <b-navbar-nav>
-                <b-nav-item :to="{ name: 'InvoicesIndex' }">Mis facturas</b-nav-item>
+                <b-nav-item :to="{ name: 'ContractsIndex' }">Mis contratos</b-nav-item>
+                <b-nav-item :to="{ name: 'NewContract' }">Añadir contrato</b-nav-item>
                 <b-nav-item :to="{ name: 'UploadInvoice' }">Subir factura</b-nav-item>
             </b-navbar-nav>
 
@@ -45,11 +46,12 @@ export default {
       excludedRoutes: [
           '/login',
           '/register',
-          ''
       ],
     }
   },
   mounted() {
+    if (this.$route.path === '/')
+      this.$router.push(this.$route.fullPath.replace('/#', ''));
     this.$nextTick(function() {
       if (!this.excludedRoute)
         this.fetchData();
@@ -59,6 +61,7 @@ export default {
     this.$nextTick(function() {
       if (this.$store.state.vueRoutes.includes(this.$route.path)) {
         document.querySelector('#main_container').innerText = '';
+        document.querySelector('#main_container').style.height = '0px';
       }
     });
   },
@@ -78,8 +81,8 @@ export default {
 </script>
 
 <style scoped>
-p {
-  font-size: 2em;
-  text-align: center;
-}
+  p {
+    font-size: 2em;
+    text-align: center;
+  }
 </style>

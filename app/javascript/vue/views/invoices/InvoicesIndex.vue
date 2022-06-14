@@ -29,10 +29,16 @@
                                 ></b-icon>
                             </p>
                         </div>
-                        <h1 style="color: purple">Mis facturas</h1>
+                        <h1>Mis facturas</h1>
                     </th>
                 </tr>
             </thead>
+            <div>
+                <b-alert :show="missingInvoices" variant="warning" dismissible @dismissed="missingInvoices = false">
+                    Ups! Parece que faltan algunas facturas para el año {{ availableYears[currentChartPage] }}.
+                    Haz click <b-link :to="{ name: 'UploadInvoice' }">aquí</b-link> para subirlas.
+                </b-alert>
+            </div>
         </table>
         <div v-if="tableMode" id="table-mode">
             <div class="filter-container">
@@ -76,9 +82,9 @@
                     <b-col cols="2">
                         <b-form-group>
                             <b-button
-                            class="outline-purple"
-                            :disabled="!filter"
-                            @click="clearFilters"
+                                class="outline-purple"
+                                :disabled="!filter"
+                                @click="clearFilters"
                             >Clear filters</b-button>
                         </b-form-group>
                     </b-col>
@@ -151,7 +157,7 @@
                     :items="invoices"
                     :fields="fields"
                     :per-page="perPage"
-                    :current-page="currentPage"
+                    :current-page="currentTablePage"
                     :sort-by.sync="sortBy"
                     :sort-desc.sync="sortDesc"
                     :filter="filter"
@@ -177,7 +183,7 @@
                     </template>
                 </b-table>
                 <b-pagination
-                    v-model="currentPage"
+                    v-model="currentTablePage"
                     :total-rows="totalRows"
                     :per-page="perPage"
                     aria-controls="invoices-table"
@@ -186,11 +192,39 @@
             </div>
         </div>
         <div v-else id="graphic-mode">
+            <div class="filter-container">
+                <b-row style="display: flex">
+                    <b-col>
+                        <b-button
+                            @click="{
+                                currentChartPage = 0;
+                                chartFilter.perYear = !chartFilter.perYear;
+                            }"
+                            class="outline-purple"
+                            button
+                        >
+                            {{ chartFilter.perYear ? 'Ver todas las facturas' : 'Ver facturas por año' }}
+                        </b-button>
+                    </b-col>
+                    <b-col>
+                        <multiselect
+                            v-model="chartFilter.field"
+                            :options="filterableFields"
+                            label="label"
+                            track-by="name"
+                            :searchable="false"
+                            :show-labels="false"
+                            placeholder="Seleccionar opción"
+                            style="width: 60%"
+                        />
+                    </b-col>
+                </b-row>
+            </div>
             <div>
                 <LineChart
                     :labels="chartLabels"
                     :datasets="chartData"
-                    v-if="graphicsFilter.perYear"
+                    v-if="chartFilter.perYear"
                 />
                 <BarChart
                     :labels="chartLabels"
@@ -202,7 +236,7 @@
                 <p
                     class="h4 mb-2 btn show-button page-button"
                     :style="
-                        currentChartPage < Math.ceil(invoices.length/maxInvoicesPerChart) - 1 ?
+                        nextChartPageEnabled() ?
                         'color: purple' : 'color: gray; border-color: white !important'
                     "
                     @click="nextChartPage()"
@@ -212,12 +246,16 @@
                     ></b-icon>
                 </p>
                 <b style="font-size: 1.4rem; color: purple">
-                    {{ Math.ceil(invoices.length/maxInvoicesPerChart) - currentChartPage }}
+                    {{ 
+                        chartFilter.perYear
+                        ? availableYears[currentChartPage]
+                        : Math.ceil(invoices.length/maxInvoicesPerChart) - currentChartPage
+                    }}
                 </b>
                 <p
                     class="h4 mb-2 btn show-button page-button"
                     :style="
-                        currentChartPage > 0 ?
+                        previousChartPageEnabled() ?
                         'color: purple' : 'color: gray; border-color: white !important'
                     "
                     @click="previousChartPage()"
@@ -248,7 +286,8 @@ export default {
     data() {
         return {
             invoices: [],
-            fieldsByUnit: null,
+            fieldsByUnit: {},
+            availableYears: [],
             user: {},
             error: '',
             fields: [
@@ -289,26 +328,33 @@ export default {
                 consumedEnergyRange: [0, Number.MAX_VALUE],
                 totalPriceRange: [0, Number.MAX_VALUE],
             },
-            graphicsFilter: {
-                field: 'total_price',
+            chartFilter: {
+                field: { name: 'total_price', label: 'Precio total' },
                 perYear: false,
             },
+            filterableFields: [
+                { name: 'total_price', label: 'Precio total' }, 
+                { name: 'current_energy_consumption', label: 'Energía consumida' }
+            ],
             showAdvancedFilters: false,
             perPage: 10,
-            currentPage: 1,
+            currentTablePage: 1,
             totalRows: 0,
             sortBy: 'invoice_release_date',
             sortDesc: true,
             months: [],
             currentChartPage: 0,
-            maxInvoicesPerChart: 2,
+            maxInvoicesPerChart: 12,
+            missingInvoices: false,
         }
     },
     computed: {
         chartData: function() {
-            const field = this.graphicsFilter.field;
-            const label = this.formatFieldName(field);
-            const data = this.pluckInvoicesBy(field).reverse();
+            const field = this.chartFilter.field.name;
+            const label = this.chartFilter.field.label + ` (${this.determineFieldUnit(field)})`;
+            const data = this.chartFilter.perYear
+                ? this.pluckCurrentYearInvoicesBy(field)
+                : this.pluckInvoicesBy(field).reverse();
             return [
                 {
                     label: label,
@@ -321,7 +367,7 @@ export default {
             ];  
         },
         chartLabels: function() {
-            if (this.graphicsFilter.perYear)
+            if (this.chartFilter.perYear)
                 return this.months;
             else
                 return this.pluckInvoicesBy('invoice_release_date').map(
@@ -335,12 +381,13 @@ export default {
     methods: {
         async fetchData() {
             this.error = '';
-            this.user = this.user = this.$store.state.currentUser;
+            this.user = this.$store.state.currentUser;
             try {
                 axios.defaults.headers.common["X-CSRF-Token"] = document
                     .querySelector('meta[name="csrf-token"]')
                     .getAttribute('content');
-                const response = await axios.get('/invoices');
+                const params = { contract_id: this.$route.params.id };
+                const response = await axios.get('/invoices', { params });
                 if (response.data.success == 'true') {
                     this.invoices = response.data.invoices;
                     this.invoices.sort(this.compareInvoicesDates);
@@ -348,8 +395,9 @@ export default {
                     this.filter.consumedEnergyRange[1] = this.findInvoicesMaxField('current_energy_consumption');
                     this.filter.totalPriceRange[1] = this.findInvoicesMaxField('total_price');
                     this.months = response.data.months;
+                    this.pluckAvailableYears().forEach(year => this.availableYears.push(year));
                 } else {
-                    this.error = response.data.error;
+                    this.error = response.data.reason.message;
                 }
             } catch (error) {
                 this.error = error;
@@ -365,7 +413,7 @@ export default {
         },
         onFiltered(filteredItems) {
             this.totalRows = filteredItems.length;
-            this.currentPage = 1;
+            this.currentTablePage = 1;
         },
         invoicesFilters(item, filter) {
             const searchMatches = Object.keys(item).some(
@@ -425,15 +473,42 @@ export default {
             const finalIndex = startIndex + this.maxInvoicesPerChart;
             return this.invoices.slice(startIndex, finalIndex).map(invoice => invoice[field]);
         },
+        pluckCurrentYearInvoicesBy(field) {
+            const currentYear = this.availableYears[this.currentChartPage];
+            const currentYearInvoices = [];
+            currentYearInvoices[11] = NaN;
+            currentYearInvoices.fill(NaN);
+            this.invoices.forEach((invoice) => {
+                const releaseDate = new Date(invoice.invoice_release_date);
+                if (releaseDate.getFullYear() === currentYear) 
+                    currentYearInvoices[releaseDate.getMonth()-1] = invoice[field];
+            });
+            if (currentYearInvoices.some((value) => Number.isNaN(value)))
+                this.missingInvoices = true;
+            return currentYearInvoices;
+        },
+        pluckAvailableYears() {
+            return new Set(this.invoices.map(
+                invoice => new Date(invoice['invoice_release_date']).getFullYear()
+            ));
+        },
         nextChartPage() {
-            if (this.currentChartPage < Math.ceil(this.invoices.length/this.maxInvoicesPerChart) - 1) {
+            if (this.nextChartPageEnabled()) {
                 this.currentChartPage++;
             }
         },
         previousChartPage() {
-            if (this.currentChartPage > 0) {
+            if (this.previousChartPageEnabled()) {
                 this.currentChartPage--;
             }
+        },
+        nextChartPageEnabled() {
+            return this.chartFilter.perYear
+                ? this.currentChartPage < this.availableYears.length - 1
+                : this.currentChartPage < Math.ceil(this.invoices.length/this.maxInvoicesPerChart) - 1;
+        },
+        previousChartPageEnabled() {
+            return this.currentChartPage > 0;
         }
     }
 }
@@ -452,13 +527,6 @@ export default {
         padding-right: 3% !important;
     }
 
-    .page-header {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 0;
-    }
-
     .switch-mode {
         position: absolute;
         left: 7%;
@@ -472,3 +540,4 @@ export default {
         margin-right: 10px;
     }
 </style>
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
