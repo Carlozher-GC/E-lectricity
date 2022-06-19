@@ -251,7 +251,7 @@ export default {
                 if (response.data.success == 'true') {
                     this.contract = response.data.contract;
                     this.contract.start_date = this.formatDate(new Date(this.contract.start_date));
-                    if (this.contract.end_date) this.contract.end_date = this.formatDate(this.contract.end_date);
+                    if (this.contract.end_date) this.contract.end_date = this.formatDate(new Date(this.contract.end_date));
                     this.fetchImages();
                 } else {
                     this.error = response.data.reason.message;

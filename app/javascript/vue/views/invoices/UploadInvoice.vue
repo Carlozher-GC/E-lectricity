@@ -58,27 +58,50 @@
             </b-card-title>
             <b-alert :show="error !== ''" variant="danger">{{ error }}</b-alert>
             <b-container>
-                <b-row>
-                    <b-col cols="6" v-for="field in Object.keys(parsedInvoice)" :key="field" class="invoice-field">
-                        <b-row>
-                            <b-col cols="6">
-                                <strong class="field-name">{{ formatFieldName(field) }}:</strong>
-                            </b-col>
-                            <b-col cols="6">
-                                <b-input-group>
-                                    <b-form-input 
-                                        :type="determineFieldType(field)"
-                                        v-model="parsedInvoice[field]"
-                                    >
-                                    </b-form-input>
-                                    <b-input-group-append is-text v-if="determineFieldUnit(field) !== null">
-                                        {{ determineFieldUnit(field) }}
-                                    </b-input-group-append>
-                                </b-input-group>
+                <div>
+                    <div>
+                        <b-nav tabs fill>
+                            <b-nav-item :active="currentSection == 0" @click="currentSection = 0">
+                                Información general
+                            </b-nav-item>
+                            <b-nav-item :active="currentSection == 1" @click="currentSection = 1">
+                                Consumo de energía
+                            </b-nav-item>
+                            <b-nav-item :active="currentSection == 2" @click="currentSection = 2">
+                                Precio
+                            </b-nav-item>
+                            <b-nav-item :active="currentSection == 3" @click="currentSection = 3">
+                                Desglose de costes
+                            </b-nav-item>
+                            <b-nav-item :active="currentSection == 4" @click="currentSection = 4">
+                                Impuestos
+                            </b-nav-item>
+                        </b-nav>
+                    </div>
+                    <div v-for="(section, index) of fieldsBySection" :key="index">
+                        <b-row v-if="currentSection == index">
+                            <b-col cols="6" v-for="field in section" :key="field" class="invoice-field">
+                                <b-row>
+                                    <b-col cols="6">
+                                        <strong class="field-name">{{ formatFieldName(field) }}:</strong>
+                                    </b-col>
+                                    <b-col cols="6">
+                                        <b-input-group>
+                                            <b-form-input 
+                                                :type="determineFieldType(field)"
+                                                v-model="parsedInvoice[field]"
+                                            >
+                                            </b-form-input>
+                                            <b-input-group-append is-text v-if="determineFieldUnit(field) !== null">
+                                                {{ determineFieldUnit(field) }}
+                                            </b-input-group-append>
+                                        </b-input-group>
+                                    </b-col>
+                                </b-row>
                             </b-col>
                         </b-row>
-                    </b-col>
-                </b-row>
+                    </div>
+                </div>
                 <b-row style="padding-top: 20px; text-align: center">
                     <b-col>
                         <b-button 
@@ -123,6 +146,8 @@ export default {
             error: '',
             fieldsByType: null,
             fieldsByUnit: null,
+            fieldsBySection: null,
+            currentSection: 0,
         }
     },
     mounted() {
@@ -145,6 +170,7 @@ export default {
                     this.parsedInvoice = response.data.invoice;
                     this.fieldsByType = response.data.fields_by_type;
                     this.fieldsByUnit = response.data.fields_by_unit;
+                    this.fieldsBySection = response.data.fields_by_section;
                     this.invoiceUploaded = true;
                 } else {
                     this.invoice = null;
@@ -240,6 +266,15 @@ export default {
 </script>
 
 <style scoped>
+
+    a {
+        color: purple;
+    }
+
+    a:hover {
+        color: rgb(163, 69, 163);
+    }
+
     .upload-container {
         color: purple;
         padding-left: 10%;

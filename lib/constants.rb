@@ -57,6 +57,30 @@ INVOICE_FIELDS_BY_UNIT = {
     '€/kW': %i[marketer_cost_rate access_toll_rate]
 }.freeze
 
+INVOICE_FIELDS_BY_SECTION = [
+    [
+        :invoice_number, :invoice_reference, :invoice_release_date,
+        :start_billing_date, :end_billing_date, :total_billing_days, :days_per_year
+    ],
+    [
+        :last_energy_consumption, :current_energy_consumption, :energy_consumption_delta
+    ],
+    [
+        :contracted_power_price, :consumed_energy_price, :subtotal_1,
+        :electricity_tax, :equipment_rental_price, :subtotal_2, :total_price
+    ],
+    [
+        :access_toll_rate, :access_toll_price, :marketer_cost_rate,
+        :marketer_cost_price, :contracted_power_rate, :access_toll_energy_rate,
+        :access_toll_energy_price, :energy_cost_rate, :energy_cost_price,
+        :energy_rate, :energy_price
+    ],
+    [
+        :equipment_price_per_day, :electricity_tax_rate, :subtotal_tax_equipment,
+        :normal_tax_rate, :reduced_tax_price, :reduced_tax_rate, :total_plus_tax
+    ]
+].freeze
+
 # Months
 MONTHS = {
     'enero': 1,

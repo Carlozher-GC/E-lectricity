@@ -27,7 +27,8 @@ class InvoicesController < ApplicationController
                                success: 'true',
                                invoice: read_invoice,
                                fields_by_type: INVOICE_FIELDS_BY_TYPE,
-                               fields_by_unit: INVOICE_FIELDS_BY_UNIT
+                               fields_by_unit: INVOICE_FIELDS_BY_UNIT,
+                               fields_by_section: INVOICE_FIELDS_BY_SECTION
                              }
             rescue StandardError => e
                 render json: { success: 'false', reason: READ_INVOICE_ERROR, details: e }
@@ -41,7 +42,9 @@ class InvoicesController < ApplicationController
         render json: {
             success: 'true',
             invoice: @invoice,
-            fields_by_unit: INVOICE_FIELDS_BY_UNIT
+            fields_by_type: INVOICE_FIELDS_BY_TYPE,
+            fields_by_unit: INVOICE_FIELDS_BY_UNIT,
+            fields_by_section: INVOICE_FIELDS_BY_SECTION
         }
     end
 

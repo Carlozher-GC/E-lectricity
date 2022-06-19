@@ -9,7 +9,7 @@ class UsersController < ApplicationController
         @user.enabled = true
         if @user.save
             if create_session
-                redirect_to(invoices_path)
+                redirect_to('/#/contracts')
             else
                 redirect_to(login_path(error: ACCOUNT_BLOCKED_ERROR))
             end

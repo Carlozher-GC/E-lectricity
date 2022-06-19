@@ -18,8 +18,8 @@
                 <template #button-content>
                     <b>{{ currentUser.username }}</b>
                 </template>
-                <b-dropdown-item :to="{ name: 'UserProfile' }">Profile</b-dropdown-item>
-                <b-dropdown-item href="/logout">Log Out</b-dropdown-item>
+                <b-dropdown-item :to="{ name: 'UserProfile' }">Perfil</b-dropdown-item>
+                <b-dropdown-item href="/logout">Desconectarse</b-dropdown-item>
                 </b-nav-item-dropdown>
             </b-navbar-nav>
             </b-collapse>
