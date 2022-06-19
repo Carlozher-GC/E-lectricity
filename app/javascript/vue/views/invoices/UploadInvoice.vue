@@ -188,6 +188,10 @@ export default {
                 const response = await axios.get('/contracts');
                 if (response.data.success == 'true') {
                     this.contracts = response.data.contracts;
+                    if (this.$route.params.contract_id)
+                        this.contract = this.contracts.find(
+                            (contract) => this.$route.params.contract_id == contract.id
+                        );
                 } else {
                     this.error = response.data.reason.message;
                 }

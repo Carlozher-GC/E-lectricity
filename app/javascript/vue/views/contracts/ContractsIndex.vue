@@ -12,7 +12,21 @@
                 </tr>
             </thead>
         </table>
-        <div>
+        <div v-if="contracts.length <= 0">
+            <br>
+            <b-card>
+                <b-card-text>
+                    <br>
+                    Parece que todavía no tienes ningún contrato.
+                    <br><br>
+                    <b-button
+                        class="btn-purple"
+                        :to="{ name: 'NewContract' }"
+                    >Añadir contrato</b-button>
+                </b-card-text>
+            </b-card>
+        </div>
+        <div v-else>
             <b-card-group deck>
                 <b-card
                     v-for="(contract, index) in this.contracts"
@@ -26,10 +40,20 @@
                             <b-skeleton-img animation="fade" no-aspect height="331" width="331" />
                         </b-col>
                         <b-col md="6" v-else-if="contract.images && contract.images.length > 0">
-                            <b-card-img 
-                                :src="contract.images[0]"
-                                class="rounded-0"
-                            ></b-card-img>
+                            <b-carousel
+                                style="text-shadow: 0px 0px 2px #000"
+                                fade
+                                indicators
+                                img-width="331"
+                                img-height="331"
+                            >
+                                <b-carousel-slide
+                                    v-for="(image, i) in contract.images"
+                                    :key="i"
+                                    :img-src="image"
+                                    class="sized-image"
+                                />
+                            </b-carousel>
                         </b-col>
                         <b-col md="6" v-else>
                             <div
@@ -97,7 +121,6 @@
                                     >Ver facturas</b-button>
                                     <router-link
                                         :to="{ name: 'EditContract', params: { id: contract.id } }"
-                                        tag="button"
                                         class="btn show-button"
                                     >
                                         <b-icon
@@ -142,6 +165,7 @@ export default {
                 const response = await axios.get('/contracts');
                 if (response.data.success == 'true') {
                     this.contracts = response.data.contracts;
+                    this.loadingImages = true;
                     this.fetchImages();
                 } else {
                     this.error = response.data.reason.message;
@@ -180,9 +204,8 @@ export default {
                 .querySelector('meta[name="csrf-token"]')
                 .getAttribute('content');
             for (let i = 0; i < this.contracts.length; i++) {
-                this.loadingImages = true;
                 const params = { contract_id: this.contracts[i].id };
-                axios.get('/fetch_images', { params })
+                await axios.get('/fetch_images', { params })
                     .then((response) => {
                         if (response.data.success == 'true') {
                             this.contracts[i].images = response.data.images_paths;
@@ -191,20 +214,24 @@ export default {
                             this.error = 
                                 `Images could not be loaded: ${response.data.reason.message}: ${response.data.details}`;
                         }
-                        this.loadingImages = false;
                     })
                     .catch((error) => {
                         this.error = `Images could not be loaded: ${error}`;
                     });
             }
+            this.loadingImages = false;
         },
         formatDate(date) {
-            return `${date.getDay()}-${date.getMonth()}-${date.getFullYear()}`;
+            const month = date.getMonth() < 9 ? `0${date.getMonth()+1}` : date.getMonth()+1;
+            const day = date.getDate() <= 9 ? `0${date.getDate()}` : date.getDate();
+            return `${day}-${month}-${date.getFullYear()}`;
         },
     }
 }
 </script>
 <style>
+    @import '../../../packs/stylesheets.scss';
+
     .contract-controls {
         bottom: 15px;
         position: absolute;
@@ -213,10 +240,19 @@ export default {
 
     .add-image {
         position: absolute;
+        left: 5%;
+        right: 5%;
         top: 40%;
+        bottom: 40%;
     }
 
     .upload-file-button {
         max-width: 70%;
+    }
+
+    .sized-image {
+        object-fit: cover;
+        width: 331px;
+        height: 331px;
     }
 </style>

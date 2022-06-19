@@ -1,7 +1,7 @@
 require 'errors'
 
 class SessionsController < ApplicationController
-    skip_before_action :authenticated?, only: %i[new create logout]
+    skip_before_action :authenticated?, only: %i[new create logout session_expiracy_time]
 
     include SessionsHelper
 
@@ -25,6 +25,20 @@ class SessionsController < ApplicationController
     def logout
         reset_session
         redirect_to(login_path)
+    end
+
+    def session_expiracy_time
+        if params[:user_id].present? && session[:user_id] == params[:user_id].to_i
+            unless Time.zone.now.to_i - session[:access_time].to_i > SESSION_LENGTH_IN_SECONDS
+                render json: {
+                    success: 'true', expiracy_time: session[:access_time] + SESSION_LENGTH_IN_SECONDS
+                } and return
+            end
+        end
+
+        render json: {
+            success: 'false', reason: SESSION_EXPIRED_ERROR
+        }
     end
 
     private

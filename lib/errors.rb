@@ -12,6 +12,8 @@ CREATE_INVOICE_ERROR = { code: 3.2, message: 'The invoice could not be created' 
 
 CREATE_CONTRACT_ERROR = { code: 4.1, message: 'The contract could not be created' }.freeze
 
-ATTACH_IMAGE_ERROR = { code: 4.2, message: 'The image could not be attached to the contract' }.freeze
+UPDATE_CONTRACT_ERROR = { code: 4.2, message: 'The contract could not be updated' }.freeze
 
-READ_IMAGE_ERROR = { code: 4.3, message: 'The image attached to the contract could not be read' }.freeze
+ATTACH_IMAGE_ERROR = { code: 4.3, message: 'The image could not be attached to the contract' }.freeze
+
+READ_IMAGE_ERROR = { code: 4.4, message: 'The image attached to the contract could not be read' }.freeze

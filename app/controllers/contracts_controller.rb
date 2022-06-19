@@ -2,6 +2,9 @@ require 'errors'
 require 'constants'
 
 class ContractsController < ApplicationController
+    before_action :set_contract, only: %i[show update]
+
+    # GET /contracts
     def index
         render json: { 
             success: 'true',
@@ -9,6 +12,15 @@ class ContractsController < ApplicationController
         }
     end
 
+    # GET /contracts
+    def show
+        render json: {
+            success: 'true',
+            contract: Contract.find(params[:id])
+        }
+    end
+
+    # POST /add_contract
     def create
         @contract = Contract.new(contract_params)
         @contract.user_id = session[:user_id]
@@ -16,13 +28,27 @@ class ContractsController < ApplicationController
             render json: { success: 'true', contract_id: @contract.id }
         else
             render json: { 
-                           success: 'false', 
-                           reason: CREATE_CONTRACT_ERROR,
-                           details: @contract.errors.first.message
-                         }
+                success: 'false', 
+                reason: CREATE_CONTRACT_ERROR,
+                details: @contract.errors.first.message
+            }
         end
     end
 
+    # PATCH /contracts/:id
+    def update
+        if @contract.update(contract_params)
+            render json: { success: 'true' }
+        else
+            render json: {
+                success: 'false',
+                reason: UPDATE_CONTRACT_ERROR,
+                details: @contract.errors.first.message
+            }
+        end
+    end
+
+    # POST /attach_image
     def attach_image
         if attach_image_params_valid?
             begin
@@ -40,6 +66,7 @@ class ContractsController < ApplicationController
         end
     end
 
+    # GET /fetch_images
     def fetch_images
         if params[:contract_id]
             begin
@@ -60,6 +87,10 @@ class ContractsController < ApplicationController
     end
 
     private
+
+    def set_contract
+        @contract = Contract.find(params[:id])
+    end
 
     def contract_params
         params.require(:contract).permit(

@@ -4,6 +4,7 @@ import VueRouter from 'vue-router';
 import UserProfile from './views/users/UserProfile.vue';
 import ContractsIndex from './views/contracts/ContractsIndex.vue';
 import NewContract from './views/contracts/NewContract.vue';
+import EditContract from './views/contracts/EditContract.vue';
 import UploadInvoice from './views/invoices/UploadInvoice.vue';
 import InvoicesIndex from './views/invoices/InvoicesIndex.vue';
 import ShowInvoice from './views/invoices/ShowInvoice.vue';
@@ -17,6 +18,7 @@ const router = new VueRouter({
         { path: '/profile', component: UserProfile, name: 'UserProfile' },
         { path: '/contracts', component: ContractsIndex, name: 'ContractsIndex' },
         { path: '/add_contract', component: NewContract, name: 'NewContract' },
+        { path: '/contracts/:id', component: EditContract, name: 'EditContract' },
         { path: '/upload_invoice', component: UploadInvoice, name: 'UploadInvoice' },
         { path: '/contract/:id/invoices/', component: InvoicesIndex, name: 'InvoicesIndex' },
         { path: '/invoice/:id', component: ShowInvoice, name: 'ShowInvoice' }

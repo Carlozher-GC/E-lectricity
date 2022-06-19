@@ -13,7 +13,7 @@ export default new Vuex.Store({
             '/add_contract',
             '/contracts',
         ],
-        currentUser: {}
+        currentUser: {},
     },
     getters: {
 
@@ -21,7 +21,7 @@ export default new Vuex.Store({
     mutations: {
         SAVE_CURRENT_USER(state, currentUser) {
             state.currentUser = currentUser;
-        }
+        },
     },
     actions: {
         async loadCurrentUser({ commit }) {
@@ -33,6 +33,9 @@ export default new Vuex.Store({
             }).catch(() => {
                 return commit('SAVE_CURRENT_USER', {});
             });
-        }
+        },
+        async logOut({ commit }) {
+            return commit('SAVE_CURRENT_USER', {});
+        },
     }
 });

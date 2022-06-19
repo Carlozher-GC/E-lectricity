@@ -32,6 +32,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 import NavigationBar from './components/NavigationBar.vue';
 
 export default {
@@ -47,6 +49,7 @@ export default {
           '/login',
           '/register',
       ],
+      interval: null,
     }
   },
   mounted() {
@@ -56,20 +59,52 @@ export default {
       if (!this.excludedRoute)
         this.fetchData();
     });
+    this.interval = setInterval(
+      async function () {
+        this.checkSessionState();
+      }.bind(this),
+      1000 * 60
+    );
   },
   updated() {
     this.$nextTick(function() {
-      if (this.$store.state.vueRoutes.includes(this.$route.path)) {
+      if (!this.excludedRoute) {
         document.querySelector('#main_container').innerText = '';
         document.querySelector('#main_container').style.height = '0px';
       }
     });
   },
   methods: {
-    fetchData() {
-      this.$store.dispatch('loadCurrentUser').then(() => {
+    async fetchData() {
+      await this.$store.dispatch('loadCurrentUser').then(() => {
         this.currentUser = this.$store.state.currentUser;
       });
+      await this.checkSessionState();
+    },
+    async checkSessionState() {
+      if (!this.excludedRoute)
+        try {
+            axios.defaults.headers.common["X-CSRF-Token"] = document
+                .querySelector('meta[name="csrf-token"]')
+                .getAttribute('content');
+            const params = { user_id: this.$store.state.currentUser.id };
+            const response = await axios.get('/session_expiracy_time', { params });
+            if (response.data.success == 'true') {
+              if (this.isSessionExpired(response.data.expiracy_time))
+                this.logout();
+            } else {
+              this.logout();
+            }
+        } catch (error) {
+          this.logout();
+        }
+    },
+    isSessionExpired(expiracyTime) {
+      return expiracyTime <= Date.now()/1000;
+    },
+    logout() {
+      this.$store.dispatch('logOut');
+      window.location.href = '/logout';
     }
   },
   computed: {

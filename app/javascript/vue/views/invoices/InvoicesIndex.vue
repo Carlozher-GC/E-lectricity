@@ -1,269 +1,288 @@
 <template>
     <div>
-        <div>
-            <b-alert :show="error !== ''" variant="danger">{{ error }}</b-alert>
+        <div v-if="invoices.length <= 0">
+            <br>
+            <b-card>
+                <b-card-text>
+                    <br>
+                    Parece que todavía no has subido ninguna factura para este contrato.
+                    <br><br>
+                    <b-button
+                        class="btn-purple"
+                        :to="{ name: 'UploadInvoice', params: { contract_id: this.$route.params.id } }"
+                    >Subir factura</b-button>
+                </b-card-text>
+            </b-card>
         </div>
-        <table class="table borderless">
-            <thead>
-                <tr>
-                    <th class="page-header">
-                        <div class="switch-mode">
-                            <p
-                                class="h4 mb-2 btn show-button"
-                                @click="tableMode = false"
-                                v-if="tableMode"
-                            >
-                                <b-icon
-                                    icon="graph-up"
-                                    style="color: purple"
-                                ></b-icon>
-                            </p>
-                            <p
-                                class="h4 mb-2 btn show-button"
-                                @click="tableMode = true"
-                                v-else
-                            >
-                                <b-icon
-                                    icon="table"
-                                    style="color: purple"
-                                ></b-icon>
-                            </p>
-                        </div>
-                        <h1>Mis facturas</h1>
-                    </th>
-                </tr>
-            </thead>
+        <div v-else>
             <div>
-                <b-alert :show="missingInvoices" variant="warning" dismissible @dismissed="missingInvoices = false">
-                    Ups! Parece que faltan algunas facturas para el año {{ availableYears[currentChartPage] }}.
-                    Haz click <b-link :to="{ name: 'UploadInvoice' }">aquí</b-link> para subirlas.
-                </b-alert>
+                <b-alert :show="error !== ''" variant="danger">{{ error }}</b-alert>
             </div>
-        </table>
-        <div v-if="tableMode" id="table-mode">
-            <div class="filter-container">
-                <b-row>
-                    <b-col cols="3" style="display: inline">
-                        <b-form-datepicker
-                            id="start-date"
-                            v-model="filter.startDate"
-                            today-button
-                            reset-button
-                            close-button
-                            value-as-date
-                            placeholder="Fecha inicial"
-                            locale="es"
-                        ></b-form-datepicker>
-                    </b-col>
-                    <b-col cols="3">
-                        <b-form-datepicker
-                            id="end-date"
-                            v-model="filter.endDate"
-                            today-button
-                            reset-button
-                            close-button
-                            value-as-date
-                            placeholder="Fecha final"
-                            locale="es"
-                        ></b-form-datepicker>
-                    </b-col>
-                    <b-col cols="4">
-                        <b-form-group label-size="md" label-for="filterInput" class="mb-0">
-                            <b-input-group size="md">
-                                <b-form-input
-                                    v-model="filter.search"
-                                    type="search"
-                                    id="filterInput"
-                                    placeholder="Type to Search"
-                                ></b-form-input>
-                            </b-input-group>
-                        </b-form-group>
-                    </b-col>
-                    <b-col cols="2">
-                        <b-form-group>
+            <table class="table borderless">
+                <thead>
+                    <tr>
+                        <th class="page-header">
+                            <div class="switch-mode">
+                                <p
+                                    class="h4 mb-2 btn show-button"
+                                    @click="tableMode = false"
+                                    v-if="tableMode"
+                                >
+                                    <b-icon
+                                        icon="graph-up"
+                                        style="color: purple"
+                                    ></b-icon>
+                                </p>
+                                <p
+                                    class="h4 mb-2 btn show-button"
+                                    @click="{ 
+                                        tableMode = true;
+                                        missingInvoices = false;
+                                    }"
+                                    v-else
+                                >
+                                    <b-icon
+                                        icon="table"
+                                        style="color: purple"
+                                    ></b-icon>
+                                </p>
+                            </div>
+                            <h1>Mis facturas</h1>
+                        </th>
+                    </tr>
+                </thead>
+                <div>
+                    <b-alert :show="missingInvoices" variant="warning" dismissible @dismissed="missingInvoices = false">
+                        Ups! Parece que faltan algunas facturas para el año {{ availableYears[currentChartPage] }}.
+                        Haz click <b-link :to="{ name: 'UploadInvoice' }">aquí</b-link> para subirlas.
+                    </b-alert>
+                </div>
+            </table>
+            <div v-if="tableMode" id="table-mode">
+                <div class="filter-container">
+                    <b-row>
+                        <b-col cols="3" style="display: inline">
+                            <b-form-datepicker
+                                id="start-date"
+                                v-model="filter.startDate"
+                                today-button
+                                reset-button
+                                close-button
+                                value-as-date
+                                placeholder="Fecha inicial"
+                                locale="es"
+                            ></b-form-datepicker>
+                        </b-col>
+                        <b-col cols="3">
+                            <b-form-datepicker
+                                id="end-date"
+                                v-model="filter.endDate"
+                                today-button
+                                reset-button
+                                close-button
+                                value-as-date
+                                placeholder="Fecha final"
+                                locale="es"
+                            ></b-form-datepicker>
+                        </b-col>
+                        <b-col cols="4">
+                            <b-form-group label-size="md" label-for="filterInput" class="mb-0">
+                                <b-input-group size="md">
+                                    <b-form-input
+                                        v-model="filter.search"
+                                        type="search"
+                                        id="filterInput"
+                                        placeholder="Type to Search"
+                                    ></b-form-input>
+                                </b-input-group>
+                            </b-form-group>
+                        </b-col>
+                        <b-col cols="2">
+                            <b-form-group>
+                                <b-button
+                                    class="outline-purple"
+                                    :disabled="!filter"
+                                    @click="clearFilters"
+                                >Clear filters</b-button>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                    <b-row style="display: block">
+                        <p
+                            v-if="!showAdvancedFilters"
+                            @click="showAdvancedFilters = true"
+                            class="underlinable-text"
+                        >Mostrar filtros avanzados</p>
+                        <b-card v-if="showAdvancedFilters" class="advanced-filters">
+                            <b-row>
+                                <b-col cols="6" class="compact-slider">
+                                    <b>Rango de energía consumida</b>
+                                    <br><br>
+                                    <vue-slider
+                                        id="consumed-energy-filter"
+                                        v-model="filter.consumedEnergyRange"
+                                        :min="0"
+                                        :max="findInvoicesMaxField('current_energy_consumption')"
+                                        :min-range="findInvoicesMaxField('current_energy_consumption')*5/100"
+                                        :tooltip-placement="['bottom', 'top']"
+                                        :enable-cross="false"
+                                        :tooltip="'active'"
+                                        :use-keyboard="false"
+                                    >
+                                        <template v-slot:tooltip="{ value, focus }">
+                                            <div :class="['custom-tooltip', { focus }]">
+                                                {{ `${value} ${determineFieldUnit('current_energy_consumption')}` }}
+                                            </div>
+                                        </template>
+                                    </vue-slider>
+                                    <br>
+                                </b-col>
+                                <b-col cols="6" class="compact-slider">
+                                    <b>Rango del precio de la factura</b>
+                                    <br><br>
+                                    <vue-slider
+                                        id="consumed-energy-filter"
+                                        v-model="filter.totalPriceRange"
+                                        :min="0"
+                                        :max="findInvoicesMaxField('total_price')"
+                                        :min-range="findInvoicesMaxField('total_price')*5/100"
+                                        :tooltip-placement="['bottom', 'top']"
+                                        :enable-cross="false"
+                                        :tooltip="'active'"
+                                        :use-keyboard="false"
+                                    >
+                                        <template v-slot:tooltip="{ value, focus }">
+                                            <div :class="['custom-tooltip', { focus }]">
+                                                {{ `${value} ${determineFieldUnit('total_price')}` }}
+                                            </div>
+                                        </template>
+                                    </vue-slider>
+                                    <br>
+                                </b-col>
+                            </b-row>
+                        </b-card>
+                        <p
+                            v-if="showAdvancedFilters"
+                            @click="showAdvancedFilters = false"
+                            class="underlinable-text"
+                            style="padding-top: 10px"
+                        >Ocultar filtros avanzados</p>
+                    </b-row>
+                </div>
+                <div>
+                    <b-table
+                        id="invoices-table"
+                        :items="invoices"
+                        :fields="fields"
+                        :per-page="perPage"
+                        :current-page="currentTablePage"
+                        :sort-by.sync="sortBy"
+                        :sort-desc.sync="sortDesc"
+                        :filter="filter"
+                        :filter-function="invoicesFilters"
+                        @filtered="onFiltered"
+                        sort-icon-left
+                        striped
+                        responsive
+                        thead-class="table-header"
+                    >
+                        <template v-slot:cell(show_invoice)="row">
+                            <router-link
+                                :to="{ name: 'ShowInvoice', params: { id: row.item.id } }"
+                                class="btn show-button"
+                            >
+                                <b-icon
+                                    icon="eye-fill"
+                                    aria-hidden="true"
+                                    style="color: purple"
+                                ></b-icon>
+                            </router-link>
+                        </template>
+                    </b-table>
+                    <b-pagination
+                        v-model="currentTablePage"
+                        :total-rows="totalRows"
+                        :per-page="perPage"
+                        aria-controls="invoices-table"
+                        align="center"
+                    ></b-pagination>
+                </div>
+            </div>
+            <div v-else id="graphic-mode">
+                <div class="filter-container">
+                    <b-row style="display: flex">
+                        <b-col>
                             <b-button
+                                @click="{
+                                    currentChartPage = 0;
+                                    missingInvoices = !chartFilter.perYear;
+                                    chartFilter.perYear = !chartFilter.perYear;
+                                }"
                                 class="outline-purple"
-                                :disabled="!filter"
-                                @click="clearFilters"
-                            >Clear filters</b-button>
-                        </b-form-group>
-                    </b-col>
-                </b-row>
-                <b-row style="display: block">
+                                button
+                            >
+                                {{ chartFilter.perYear ? 'Ver todas las facturas' : 'Ver facturas por año' }}
+                            </b-button>
+                        </b-col>
+                        <b-col>
+                            <multiselect
+                                v-model="chartFilter.field"
+                                :options="filterableFields"
+                                label="label"
+                                track-by="name"
+                                :searchable="false"
+                                :show-labels="false"
+                                placeholder="Seleccionar opción"
+                                style="width: 60%"
+                            />
+                        </b-col>
+                    </b-row>
+                </div>
+                <div>
+                    <LineChart
+                        :labels="chartLabels"
+                        :datasets="chartData"
+                        v-if="chartFilter.perYear"
+                    />
+                    <BarChart
+                        :labels="chartLabels"
+                        :datasets="chartData"
+                        v-else
+                    />
+                </div>
+                <div class="chart-pagination">
                     <p
-                        v-if="!showAdvancedFilters"
-                        @click="showAdvancedFilters = true"
-                        class="underlinable-text"
-                    >Mostrar filtros avanzados</p>
-                    <b-card v-if="showAdvancedFilters" class="advanced-filters">
-                        <b-row>
-                            <b-col cols="6" class="compact-slider">
-                                <b>Rango de energía consumida</b>
-                                <br><br>
-                                <vue-slider
-                                    id="consumed-energy-filter"
-                                    v-model="filter.consumedEnergyRange"
-                                    :min="0"
-                                    :max="findInvoicesMaxField('current_energy_consumption')"
-                                    :min-range="findInvoicesMaxField('current_energy_consumption')*5/100"
-                                    :tooltip-placement="['bottom', 'top']"
-                                    :enable-cross="false"
-                                    :tooltip="'active'"
-                                    :use-keyboard="false"
-                                >
-                                    <template v-slot:tooltip="{ value, focus }">
-                                        <div :class="['custom-tooltip', { focus }]">
-                                            {{ `${value} ${determineFieldUnit('current_energy_consumption')}` }}
-                                        </div>
-                                    </template>
-                                </vue-slider>
-                                <br>
-                            </b-col>
-                            <b-col cols="6" class="compact-slider">
-                                <b>Rango del precio de la factura</b>
-                                <br><br>
-                                <vue-slider
-                                    id="consumed-energy-filter"
-                                    v-model="filter.totalPriceRange"
-                                    :min="0"
-                                    :max="findInvoicesMaxField('total_price')"
-                                    :min-range="findInvoicesMaxField('total_price')*5/100"
-                                    :tooltip-placement="['bottom', 'top']"
-                                    :enable-cross="false"
-                                    :tooltip="'active'"
-                                    :use-keyboard="false"
-                                >
-                                    <template v-slot:tooltip="{ value, focus }">
-                                        <div :class="['custom-tooltip', { focus }]">
-                                            {{ `${value} ${determineFieldUnit('total_price')}` }}
-                                        </div>
-                                    </template>
-                                </vue-slider>
-                                <br>
-                            </b-col>
-                        </b-row>
-                    </b-card>
+                        class="h4 mb-2 btn show-button page-button"
+                        :style="
+                            nextChartPageEnabled() ?
+                            'color: purple' : 'color: gray; border-color: white !important'
+                        "
+                        @click="nextChartPage()"
+                    >
+                        <b-icon
+                            icon="arrow-left-circle"
+                        ></b-icon>
+                    </p>
+                    <b style="font-size: 1.4rem; color: purple">
+                        {{ 
+                            chartFilter.perYear
+                            ? availableYears[currentChartPage]
+                            : Math.ceil(invoices.length/maxInvoicesPerChart) - currentChartPage
+                        }}
+                    </b>
                     <p
-                        v-if="showAdvancedFilters"
-                        @click="showAdvancedFilters = false"
-                        class="underlinable-text"
-                        style="padding-top: 10px"
-                    >Ocultar filtros avanzados</p>
-                </b-row>
-            </div>
-            <div>
-                <b-table
-                    id="invoices-table"
-                    :items="invoices"
-                    :fields="fields"
-                    :per-page="perPage"
-                    :current-page="currentTablePage"
-                    :sort-by.sync="sortBy"
-                    :sort-desc.sync="sortDesc"
-                    :filter="filter"
-                    :filter-function="invoicesFilters"
-                    @filtered="onFiltered"
-                    sort-icon-left
-                    striped
-                    responsive
-                    thead-class="table-header"
-                >
-                    <template v-slot:cell(show_invoice)="row">
-                        <router-link
-                            :to="{ name: 'ShowInvoice', params: { id: row.item.id } }"
-                            tag="button"
-                            class="btn show-button"
-                        >
-                            <b-icon
-                                icon="eye-fill"
-                                aria-hidden="true"
-                                style="color: purple"
-                            ></b-icon>
-                        </router-link>
-                    </template>
-                </b-table>
-                <b-pagination
-                    v-model="currentTablePage"
-                    :total-rows="totalRows"
-                    :per-page="perPage"
-                    aria-controls="invoices-table"
-                    align="center"
-                ></b-pagination>
-            </div>
-        </div>
-        <div v-else id="graphic-mode">
-            <div class="filter-container">
-                <b-row style="display: flex">
-                    <b-col>
-                        <b-button
-                            @click="{
-                                currentChartPage = 0;
-                                chartFilter.perYear = !chartFilter.perYear;
-                            }"
-                            class="outline-purple"
-                            button
-                        >
-                            {{ chartFilter.perYear ? 'Ver todas las facturas' : 'Ver facturas por año' }}
-                        </b-button>
-                    </b-col>
-                    <b-col>
-                        <multiselect
-                            v-model="chartFilter.field"
-                            :options="filterableFields"
-                            label="label"
-                            track-by="name"
-                            :searchable="false"
-                            :show-labels="false"
-                            placeholder="Seleccionar opción"
-                            style="width: 60%"
-                        />
-                    </b-col>
-                </b-row>
-            </div>
-            <div>
-                <LineChart
-                    :labels="chartLabels"
-                    :datasets="chartData"
-                    v-if="chartFilter.perYear"
-                />
-                <BarChart
-                    :labels="chartLabels"
-                    :datasets="chartData"
-                    v-else
-                />
-            </div>
-            <div class="chart-pagination">
-                <p
-                    class="h4 mb-2 btn show-button page-button"
-                    :style="
-                        nextChartPageEnabled() ?
-                        'color: purple' : 'color: gray; border-color: white !important'
-                    "
-                    @click="nextChartPage()"
-                >
-                    <b-icon
-                        icon="arrow-left-circle"
-                    ></b-icon>
-                </p>
-                <b style="font-size: 1.4rem; color: purple">
-                    {{ 
-                        chartFilter.perYear
-                        ? availableYears[currentChartPage]
-                        : Math.ceil(invoices.length/maxInvoicesPerChart) - currentChartPage
-                    }}
-                </b>
-                <p
-                    class="h4 mb-2 btn show-button page-button"
-                    :style="
-                        previousChartPageEnabled() ?
-                        'color: purple' : 'color: gray; border-color: white !important'
-                    "
-                    @click="previousChartPage()"
-                >
-                    <b-icon
-                        icon="arrow-right-circle"
-                    ></b-icon>
-                </p>
+                        class="h4 mb-2 btn show-button page-button"
+                        :style="
+                            previousChartPageEnabled() ?
+                            'color: purple' : 'color: gray; border-color: white !important'
+                        "
+                        @click="previousChartPage()"
+                    >
+                        <b-icon
+                            icon="arrow-right-circle"
+                        ></b-icon>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
@@ -448,7 +467,9 @@ export default {
             return '';
         },
         formatDate(date) {
-            return `${date.getDay()}-${date.getMonth()}-${date.getFullYear()}`;
+            const month = date.getMonth() < 9 ? `0${date.getMonth()+1}` : date.getMonth()+1;
+            const day = date.getDate() <= 9 ? `0${date.getDate()}` : date.getDate();
+            return `${day}-${month}-${date.getFullYear()}`;
         },
         findInvoicesMaxField(field) {
             return Math.max(...this.invoices.map(invoice => parseInt(invoice[field])));

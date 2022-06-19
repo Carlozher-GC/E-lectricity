@@ -12,8 +12,8 @@
             <b-form @submit="addContract" @reset="resetForm">
                 <b-card-group style="text-align: left" deck>
                     <b-card>
-                        <b-card-title style="color: purple">
-                            Información sobre el contrato edificio o vivienda
+                        <b-card-title style="color: purple; text-align: center !important">
+                            Información sobre el contrato
                             <hr>
                         </b-card-title>
                         <b-card-body>
@@ -72,7 +72,7 @@
                         </b-card-body>
                     </b-card>
                     <b-card>
-                        <b-card-title style="color: purple">
+                        <b-card-title style="color: purple; text-align: center !important">
                             Información sobre el edificio o vivienda
                             <hr>
                         </b-card-title>
@@ -194,9 +194,7 @@ export default {
                 const params = { contract: this.contract };
                 const response = await axios.post('/add_contract', params);
                 if (response.data.success == 'true') {
-                    this.$router.push(
-                        { name: 'ContractsIndex'/*, params: { id: response.data.contract_id } */}
-                    );
+                    this.$router.push({ name: 'ContractsIndex' });
                 } else {
                     this.error = response.data.reason.message + ':\n' + response.data.details;
                     window.scrollTo(0,0);
@@ -222,11 +220,6 @@ export default {
     }
 }
 </script>
-
 <style>
-    .form-button {
-        margin-top: 15px !important;
-        width: 80% !important;
-        border-radius: 28px !important;
-    }
+    @import '../../../packs/stylesheets.scss';
 </style>
