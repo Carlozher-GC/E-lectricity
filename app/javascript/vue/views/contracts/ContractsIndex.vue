@@ -27,114 +27,119 @@
             </b-card>
         </div>
         <div v-else>
-            <b-card-group deck>
-                <b-card
+            <b-row>
+                <b-col
                     v-for="(contract, index) in this.contracts"
                     :key="index"
-                    style="width: 50%; height: 331px; max-width: 50%; max-height: 331px"
-                    no-body
-                    class="overflow-hidden"
+                    cols="6"
+                    style="margin-bottom: 15px"
                 >
-                    <b-row no-gutters style="height: 100%">
-                        <b-col md="6" v-if="loadingImages">
-                            <b-skeleton-img animation="fade" no-aspect height="331" width="331" />
-                        </b-col>
-                        <b-col md="6" v-else-if="contract.images && contract.images.length > 0">
-                            <b-carousel
-                                style="text-shadow: 0px 0px 2px #000"
-                                fade
-                                indicators
-                                img-width="331"
-                                img-height="331"
-                            >
-                                <b-carousel-slide
-                                    v-for="(image, i) in contract.images"
-                                    :key="i"
-                                    :img-src="image"
-                                    class="sized-image"
-                                />
-                            </b-carousel>
-                        </b-col>
-                        <b-col md="6" v-else>
-                            <div
-                                class="btn show-button"
-                                style="height: 100%; width: 100%"
-                                v-b-modal="`add-image-modal-${index}`"
-                            >
-                                <p class="add-image">
-                                Añade una imagen del edificio haciendo click aquí
-                                <b-icon
-                                    icon="plus-circle-fill"
-                                    aria-hidden="true"
-                                    style="color: purple"
-                                ></b-icon>
-                                </p>
-                            </div>
-                            <b-modal :id="`add-image-modal-${index}`" centered title="Añadir imagen">
-                                Elige una imagen para el contrato: {{ contract.name }}
-                                <br><br>
-                                <b-form-file
-                                    v-model="image"
-                                    :state="Boolean(image)"
-                                    accept=".png, .jpg"
-                                    placeholder="Elige una imagen o suéltala aquí..."
-                                    drop-placeholder="Suelta una imagen del edificio aquí..."
-                                    class="upload-file-input"
-                                ></b-form-file>
-                                <br>
-                                <template #modal-footer="{ cancel }">
-                                    <b-button
-                                        class="btn-purple"
-                                        :disabled="image === null"
-                                        @click="uploadImage(contract.id, `add-image-modal-${index}`)">
-                                        Subir imagen
-                                    </b-button>
-                                    <b-button variant="secondary" @click="cancel()">
-                                        Cancelar
-                                    </b-button>
-                                </template>
-                            </b-modal>
-                        </b-col>
-                        <b-col md="6">
-                            <b-card-title style="color: purple; padding-top: 13px">
-                                {{ `${contract.name} (${contract.building_surface} m2)` }}
-                                <hr />
-                            </b-card-title>
-                            <b-card-text style="text-align: left; margin: 10px">
-                                <p>
-                                    Contrato con {{ contract.company_name }} desde 
-                                    {{ formatDate(new Date(contract.start_date)) }} 
-                                    {{ contract.end_date ? `hasta ${formatDate(new Date(contract.end_date))}` : '' }}
-                                </p>
-                                <p>
-                                    {{ `${contract.building_address}, ${contract.building_number}` }}
-                                    <br>
-                                    {{ `${contract.building_city}, ${contract.building_postal_code}` }}
-                                </p>
-                            </b-card-text>
-                            <div style="margin: 10px; height: 100%;">
-                                <div class="contract-controls">
-                                    <hr>
-                                    <b-button
-                                        class="btn-purple"
-                                        :to="{ name: 'InvoicesIndex', params: { id: contract.id } }"
-                                    >Ver facturas</b-button>
-                                    <router-link
-                                        :to="{ name: 'EditContract', params: { id: contract.id } }"
-                                        class="btn show-button"
-                                    >
-                                        <b-icon
-                                            icon="pencil-square"
-                                            aria-hidden="true"
-                                            style="color: purple"
-                                        ></b-icon>
-                                    </router-link>
+                    <b-card
+                        style="width: 100%; height: 331px; max-width: 100%; max-height: 331px"
+                        no-body
+                        class="overflow-hidden"
+                    >
+                        <b-row no-gutters style="height: 100%">
+                            <b-col md="6" v-if="loadingImages">
+                                <b-skeleton-img animation="fade" no-aspect height="331" width="331" />
+                            </b-col>
+                            <b-col md="6" v-else-if="contract.images && contract.images.length > 0">
+                                <b-carousel
+                                    style="text-shadow: 0px 0px 2px #000"
+                                    fade
+                                    indicators
+                                    img-width="331"
+                                    img-height="331"
+                                >
+                                    <b-carousel-slide
+                                        v-for="(image, i) in contract.images"
+                                        :key="i"
+                                        :img-src="image"
+                                        class="sized-image"
+                                    />
+                                </b-carousel>
+                            </b-col>
+                            <b-col md="6" v-else>
+                                <div
+                                    class="btn show-button"
+                                    style="height: 100%; width: 100%"
+                                    v-b-modal="`add-image-modal-${index}`"
+                                >
+                                    <p class="add-image">
+                                    Añade una imagen del edificio haciendo click aquí
+                                    <b-icon
+                                        icon="plus-circle-fill"
+                                        aria-hidden="true"
+                                        style="color: purple"
+                                    ></b-icon>
+                                    </p>
                                 </div>
-                            </div>
-                        </b-col>
-                    </b-row>
-                </b-card>
-            </b-card-group>
+                                <b-modal :id="`add-image-modal-${index}`" centered title="Añadir imagen">
+                                    Elige una imagen para el contrato: {{ contract.name }}
+                                    <br><br>
+                                    <b-form-file
+                                        v-model="image"
+                                        :state="Boolean(image)"
+                                        accept=".png, .jpg"
+                                        placeholder="Elige una imagen o suéltala aquí..."
+                                        drop-placeholder="Suelta una imagen del edificio aquí..."
+                                        class="upload-file-input"
+                                    ></b-form-file>
+                                    <br>
+                                    <template #modal-footer="{ cancel }">
+                                        <b-button
+                                            class="btn-purple"
+                                            :disabled="image === null"
+                                            @click="uploadImage(contract.id, `add-image-modal-${index}`)">
+                                            Subir imagen
+                                        </b-button>
+                                        <b-button variant="secondary" @click="cancel()">
+                                            Cancelar
+                                        </b-button>
+                                    </template>
+                                </b-modal>
+                            </b-col>
+                            <b-col md="6">
+                                <b-card-title style="color: purple; padding-top: 13px">
+                                    {{ `${contract.name} (${contract.building_surface} m2)` }}
+                                    <hr />
+                                </b-card-title>
+                                <b-card-text style="text-align: left; margin: 10px">
+                                    <p>
+                                        Contrato con {{ contract.company_name }} desde 
+                                        {{ formatDate(new Date(contract.start_date)) }} 
+                                        {{ contract.end_date ? `hasta ${formatDate(new Date(contract.end_date))}` : '' }}
+                                    </p>
+                                    <p>
+                                        {{ `${contract.building_address}, ${contract.building_number}` }}
+                                        <br>
+                                        {{ `${contract.building_city}, ${contract.building_postal_code}` }}
+                                    </p>
+                                </b-card-text>
+                                <div style="margin: 10px; height: 100%;">
+                                    <div class="contract-controls">
+                                        <hr>
+                                        <b-button
+                                            class="btn-purple"
+                                            :to="{ name: 'InvoicesIndex', params: { id: contract.id } }"
+                                        >Ver facturas</b-button>
+                                        <router-link
+                                            :to="{ name: 'EditContract', params: { id: contract.id } }"
+                                            class="btn show-button"
+                                        >
+                                            <b-icon
+                                                icon="pencil-square"
+                                                aria-hidden="true"
+                                                style="color: purple"
+                                            ></b-icon>
+                                        </router-link>
+                                    </div>
+                                </div>
+                            </b-col>
+                        </b-row>
+                    </b-card>
+                </b-col>
+            </b-row>
         </div>
     </div>
 </template>

@@ -9,7 +9,7 @@
             <br>
         </div>
         <div>
-            <b-form @submit="addContract" @reset="resetForm">
+            <b-form @reset="resetForm">
                 <b-card-group style="text-align: left" deck>
                     <b-card>
                         <b-card-title style="color: purple; text-align: center !important">
@@ -147,7 +147,7 @@
                                 </b-col>
                                 <b-col cols="7" style="text-align: center !important">
                                     <b-button
-                                        type="submit"
+                                        @click="addContract()"
                                         class="btn-purple form-button"
                                         style="margin-top: 30px !important"
                                     >Añadir contrato</b-button>
@@ -181,8 +181,6 @@ export default {
             },
             error: ''
         }
-    },
-    mounted() {
     },
     methods: {
         async addContract() {
