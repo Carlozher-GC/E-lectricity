@@ -39,6 +39,44 @@ INVOICE_KEYS = {
     'N7': :total_plus_tax
 }.freeze
 
+INVOICE_FIELDS_IN_SPANISH = {
+    invoice_number: 'Nº de factura',
+    invoice_reference: 'Nº de referencia',
+    invoice_release_date: 'Fecha de la factura',
+    start_billing_date: 'Comienzo de la facturación',
+    end_billing_date: 'Término de la facturación',
+    total_billing_days: 'Días de facturación',
+    days_per_year: 'Días por año',
+    last_energy_consumption: 'Consumo de energía previo',
+    current_energy_consumption: 'Consumo de energía actual',
+    energy_consumption_delta: 'Diferencia de consumo',
+    contracted_power_price: 'Coste potencia contratada',
+    consumed_energy_price: 'Coste energía consumida',
+    subtotal_1: 'Subtotal 1',
+    electricity_tax: 'Impuesto electricidad',
+    equipment_rental_price: 'Coste del alquiler del equipo',
+    subtotal_2: 'Subtotal 2',
+    total_price: 'Coste total',
+    access_toll_rate: 'Tarifa del peaje',
+    access_toll_price: 'Coste del peaje',
+    marketer_cost_rate: 'Tarifa del vendedor',
+    marketer_cost_price: 'Coste del vendedor',
+    contracted_power_rate: 'Tarifa potencia contratada',
+    access_toll_energy_rate: 'Tarifa de la energía del peaje',
+    access_toll_energy_price: 'Coste de la engergía del peaje',
+    energy_cost_rate: 'Tasa de coste de la energía',
+    energy_cost_price: 'Precio del coste de la energía',
+    energy_rate: 'Tasa de energía',
+    energy_price: 'Coste de la energía',
+    equipment_price_per_day: 'Coste del equipo por día',
+    electricity_tax_rate: 'Tasa del impuesto de electricidad',
+    subtotal_tax_equipment: 'Subtotal impuestos del equipo',
+    normal_tax_rate: 'Tipo impositivo normal',
+    reduced_tax_price: 'Precio del impuesto reducido',
+    reduced_tax_rate: 'Tipo impositivo reducido',
+    total_plus_tax: 'Total más impuestos'
+}.freeze
+
 # Any other field not included here will be considered as float
 INVOICE_FIELDS_BY_TYPE = {
     'date': %i[invoice_release_date start_billing_date end_billing_date],

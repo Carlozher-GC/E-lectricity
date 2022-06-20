@@ -4,6 +4,7 @@
         <div>
             <b-alert :show="error !== ''" variant="danger">{{ error }}</b-alert>
         </div>
+        <br>
         <div v-if="invoice">
             <b-card :title="`Factura Nº ${invoice.invoice_number}`">
                 <b-container>
@@ -32,7 +33,7 @@
                                 <b-col cols="6" v-for="field in section" :key="field" class="invoice-field">
                                     <b-row>
                                         <b-col cols="6">
-                                            <strong class="field-name">{{ formatFieldName(field) }}:</strong>
+                                            <strong class="field-name">{{ fieldsInSpanish[field] }}:</strong>
                                         </b-col>
                                         <b-col cols="6">
                                             <b-input-group>
@@ -54,6 +55,7 @@
                     <b-row style="padding-top: 20px; text-align: center">
                         <b-col>
                             <b-button
+                                @click="updateInvoice()"
                                 class="confirm-button upload-file-button"
                                 style="background-color: purple"
                             >
@@ -62,7 +64,7 @@
                         </b-col>
                         <b-col>
                             <b-button 
-                                :to="{ name: 'InvoicesIndex', params: { id: invoice.contract_id } }"
+                                @click="$router.push({ name: 'InvoicesIndex', params: { id: invoice.contract_id } })"
                                 class="confirm-button upload-file-button"
                                 style="background-color: purple"
                             >
@@ -90,6 +92,7 @@ export default {
             fieldsByUnit: null,
             fieldsBySection: null,
             currentSection: 0,
+            fieldsInSpanish: null,
             error: ''
         }
     },
@@ -107,9 +110,13 @@ export default {
                 const response = await axios.get(`/invoices/${this.$route.params.id}`);
                 if (response.data.success == 'true') {
                     this.invoice = response.data.invoice;
+                    this.invoice.invoice_release_date = this.formatDate(new Date(this.invoice.invoice_release_date));
+                    this.invoice.start_billing_date = this.formatDate(new Date(this.invoice.start_billing_date));
+                    this.invoice.end_billing_date = this.formatDate(new Date(this.invoice.end_billing_date));
                     this.fieldsByType = response.data.fields_by_type;
                     this.fieldsByUnit = response.data.fields_by_unit;
                     this.fieldsBySection = response.data.fields_by_section;
+                    this.fieldsInSpanish = response.data.fields_in_spanish;
                 } else {
                     this.error = response.data.reason.message;
                 }
@@ -117,17 +124,21 @@ export default {
                 this.error = error;
             }
         },
-        formatFieldName(name) {
-            let formattedName = '';
-            if (name.indexOf('_') >= 0) {
-                for (const string of name.split('_')) {
-                    const firstChar = string.charAt(0).toUpperCase();
-                    const remainingString = string.length > 1 ? string.substring(1) : '';
-                    formattedName +=  firstChar + remainingString + ' ';
+        async updateInvoice() {
+            this.error = '';
+            try {
+                axios.defaults.headers.common["X-CSRF-Token"] = document
+                    .querySelector('meta[name="csrf-token"]')
+                    .getAttribute('content');
+                const response = await axios.patch(`/invoices/${this.$route.params.id}`);
+                if (response.data.success == 'true') {
+                    this.$router.push({ name: 'InvoicesIndex', params: { id: invoice.contract_id } });
+                } else {
+                    this.error = `${response.data.reason.message}: ${response.data.details}`;
                 }
-                return formattedName.trim();
+            } catch (error) {
+                this.error = error;
             }
-            return name;
         },
         determineFieldType(field) {
             for (const [type, fields] of Object.entries(this.fieldsByType)) {
@@ -144,7 +155,12 @@ export default {
                 }
             } 
             return null;
-        }
+        },
+        formatDate(date) {
+            const month = date.getMonth() < 9 ? `0${date.getMonth()+1}` : date.getMonth()+1;
+            const day = date.getDate() <= 9 ? `0${date.getDate()}` : date.getDate();
+            return `${date.getFullYear()}-${month}-${day}`;
+        },
     }
 }
 </script>

@@ -10,6 +10,8 @@ READ_INVOICE_ERROR = { code: 3.1, message: 'The selected invoice could not be re
 
 CREATE_INVOICE_ERROR = { code: 3.2, message: 'The invoice could not be created' }.freeze
 
+UPDATE_INVOICE_ERROR = { code: 3.3, message: 'The invoice could not be updated' }.freeze
+
 CREATE_CONTRACT_ERROR = { code: 4.1, message: 'The contract could not be created' }.freeze
 
 UPDATE_CONTRACT_ERROR = { code: 4.2, message: 'The contract could not be updated' }.freeze

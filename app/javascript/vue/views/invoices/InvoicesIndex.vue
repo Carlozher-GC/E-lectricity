@@ -48,6 +48,18 @@
                                 </p>
                             </div>
                             <h1>Mis facturas</h1>
+                            <div class="upload-invoice-button">
+                                <p
+                                    class="h4 mb-2 btn show-button"
+                                    @click="$router.push(
+                                        { name: 'UploadInvoice', params: { contract_id: $route.params.id } })"
+                                >
+                                    <b-icon
+                                        icon="plus-circle"
+                                        style="color: purple"
+                                    ></b-icon>
+                                </p>
+                            </div>
                         </th>
                     </tr>
                 </thead>
@@ -551,6 +563,13 @@ export default {
     .switch-mode {
         position: absolute;
         left: 7%;
+        top: 80px;
+        display: flex;
+    }
+
+    .upload-invoice-button {
+        position: absolute;
+        right: 7%;
         top: 80px;
         display: flex;
     }

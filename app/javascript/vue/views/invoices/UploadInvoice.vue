@@ -83,7 +83,7 @@
                             <b-col cols="6" v-for="field in section" :key="field" class="invoice-field">
                                 <b-row>
                                     <b-col cols="6">
-                                        <strong class="field-name">{{ formatFieldName(field) }}:</strong>
+                                        <strong class="field-name">{{ fieldsInSpanish[field] }}:</strong>
                                     </b-col>
                                     <b-col cols="6">
                                         <b-input-group>
@@ -148,6 +148,7 @@ export default {
             fieldsByUnit: null,
             fieldsBySection: null,
             currentSection: 0,
+            fieldsInSpanish: null,
         }
     },
     mounted() {
@@ -171,6 +172,7 @@ export default {
                     this.fieldsByType = response.data.fields_by_type;
                     this.fieldsByUnit = response.data.fields_by_unit;
                     this.fieldsBySection = response.data.fields_by_section;
+                    this.fieldsInSpanish = response.data.fields_in_spanish;
                     this.invoiceUploaded = true;
                 } else {
                     this.invoice = null;
@@ -232,18 +234,6 @@ export default {
             this.parsedInvoice = null;
             this.contract = null;
             window.scrollTo(0,0);
-        },
-        formatFieldName(name) {
-            let formattedName = '';
-            if (name.indexOf('_') >= 0) {
-                for (const string of name.split('_')) {
-                    const firstChar = string.charAt(0).toUpperCase();
-                    const remainingString = string.length > 1 ? string.substring(1) : '';
-                    formattedName +=  firstChar + remainingString + ' ';
-                }
-                return formattedName.trim();
-            }
-            return name;
         },
         determineFieldType(field) {
             for (const [type, fields] of Object.entries(this.fieldsByType)) {

@@ -2,7 +2,7 @@ require 'errors'
 require 'constants'
 
 class InvoicesController < ApplicationController
-    before_action :set_invoice, only: %i[show edit update]
+    before_action :set_invoice, only: %i[show update]
 
     include InvoicesHelper
 
@@ -24,12 +24,13 @@ class InvoicesController < ApplicationController
         if params[:invoice].present?
             begin
                 render json: { 
-                               success: 'true',
-                               invoice: read_invoice,
-                               fields_by_type: INVOICE_FIELDS_BY_TYPE,
-                               fields_by_unit: INVOICE_FIELDS_BY_UNIT,
-                               fields_by_section: INVOICE_FIELDS_BY_SECTION
-                             }
+                    success: 'true',
+                    invoice: read_invoice,
+                    fields_by_type: INVOICE_FIELDS_BY_TYPE,
+                    fields_by_unit: INVOICE_FIELDS_BY_UNIT,
+                    fields_by_section: INVOICE_FIELDS_BY_SECTION,
+                    fields_in_spanish: INVOICE_FIELDS_IN_SPANISH
+                }
             rescue StandardError => e
                 render json: { success: 'false', reason: READ_INVOICE_ERROR, details: e }
             end
@@ -44,7 +45,8 @@ class InvoicesController < ApplicationController
             invoice: @invoice,
             fields_by_type: INVOICE_FIELDS_BY_TYPE,
             fields_by_unit: INVOICE_FIELDS_BY_UNIT,
-            fields_by_section: INVOICE_FIELDS_BY_SECTION
+            fields_by_section: INVOICE_FIELDS_BY_SECTION,
+            fields_in_spanish: INVOICE_FIELDS_IN_SPANISH
         }
     end
 
@@ -61,10 +63,16 @@ class InvoicesController < ApplicationController
         end
     end
 
-    def edit; end
-
     def update
-
+        if @invoice.update(invoice_params)
+            render json: { success: 'true' }
+        else
+            render json: {
+                success: 'false',
+                reason: UPDATE_INVOICE_ERROR,
+                details: @invoice.errors.first.message
+            }
+        end
     end
 
     private
