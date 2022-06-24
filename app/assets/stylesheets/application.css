@@ -48,7 +48,7 @@ html, body {
     border-color: transparent;
 }
 
-input:focus {
+.rounded-input:focus {
     outline: none !important;
     border:1px solid purple;
     box-shadow: 0 0 10px #719ECE;

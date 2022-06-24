@@ -9,6 +9,8 @@ Rails.application.routes.draw do
   post '/add_contract',               to: 'contracts#create',               as: 'add_contract'
   post '/attach_image',               to: 'contracts#attach_image',         as: 'attach_image'
   get '/fetch_images',                to: 'contracts#fetch_images',         as: 'fetch_images'
+  get '/contract_cities',             to: 'contracts#cities'
+  get '/contract_companies',          to: 'contracts#companies'
 
   # Paths related to invoices
   resources :invoices, except: %i[new create]
@@ -26,4 +28,5 @@ Rails.application.routes.draw do
   get '/current_user',                to: 'users#current_user'
   get '/register',                    to: 'users#new',                      as: 'register'
   post '/register',                   to: 'users#create'
+  get '/user_countries',              to: 'users#countries'
 end

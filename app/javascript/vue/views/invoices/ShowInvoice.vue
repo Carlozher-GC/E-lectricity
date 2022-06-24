@@ -1,5 +1,5 @@
 <template>
-    <div class="upload-container">
+    <div class="show-invoice">
         <br>
         <div>
             <b-alert :show="error !== ''" variant="danger">{{ error }}</b-alert>
@@ -179,10 +179,10 @@ export default {
         color: rgb(163, 69, 163);
     }
 
-    .upload-container {
+    .show-invoice {
         color: purple;
-        padding-left: 10%;
-        padding-right: 10%;
+        padding-left: 15%;
+        padding-right: 15%;
     }
 
     .upload-file-button {

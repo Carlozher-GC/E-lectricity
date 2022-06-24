@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="padded-main-container">
         <div v-if="invoices.length <= 0">
             <br>
             <b-card>
@@ -547,9 +547,7 @@ export default {
 }
 </script>
 
-<style>
-    @import '../../../packs/stylesheets.scss';
-
+<style scoped>
     .custom-tooltip {
         transform: translateY(5px);
         white-space: nowrap;

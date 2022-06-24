@@ -1,31 +1,48 @@
 <template>
   <div id="app">  
-    <div v-if="!excludedRoute">
-        <b-navbar toggleable="lg" type="dark" style="background-color: purple;">
-            <b-navbar-brand href="#">E-lectricity</b-navbar-brand>
+    <b-navbar
+      toggleable="lg"
+      type="dark"
+      sticky
+      style="background-color: purple; z-index: 2"
+      v-if="!excludedRoute"
+    >
+        <b-navbar-brand href="#">E-lectricity</b-navbar-brand>
 
-            <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+        <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
-            <b-collapse id="nav-collapse" is-nav>
-            <b-navbar-nav>
-                <b-nav-item :to="{ name: 'ContractsIndex' }">Mis contratos</b-nav-item>
-                <b-nav-item :to="{ name: 'NewContract' }">Añadir contrato</b-nav-item>
-                <b-nav-item :to="{ name: 'UploadInvoice' }">Subir factura</b-nav-item>
-            </b-navbar-nav>
+        <b-collapse id="nav-collapse" is-nav>
+        <b-navbar-nav>
+            <b-nav-item
+              :to="{ name: 'ContractsIndex' }"
+              :class="isPath('/contracts') ? 'current-page' : ''"
+            >Mis contratos</b-nav-item>
+            <b-nav-item
+              :to="{ name: 'NewContract' }"
+              :class="isPath('/add_contract') ? 'current-page' : ''"
+            >Añadir contrato</b-nav-item>
+            <b-nav-item
+              :to="{ name: 'UploadInvoice' }"
+              :class="isPath('/upload_invoice') ? 'current-page' : ''"
+            >Subir factura</b-nav-item>
+            <b-nav-item
+              :to="{ name: 'CompareInvoices' }"
+              :class="isPath('/compare_invoices') ? 'current-page' : ''"
+            >Comparar facturas</b-nav-item>
+        </b-navbar-nav>
 
-            <b-navbar-nav class="ml-auto">
-                <b-nav-item-dropdown right>
-                <template #button-content>
-                    <b>{{ currentUser.username }}</b>
-                </template>
-                <b-dropdown-item :to="{ name: 'UserProfile' }">Perfil</b-dropdown-item>
-                <b-dropdown-item href="/logout">Desconectarse</b-dropdown-item>
-                </b-nav-item-dropdown>
-            </b-navbar-nav>
-            </b-collapse>
-        </b-navbar>
-    </div>
-    <div style="padding-left: 5%; padding-right: 5%">
+        <b-navbar-nav class="ml-auto">
+            <b-nav-item-dropdown right>
+            <template #button-content>
+                <b>{{ currentUser.username }}</b>
+            </template>
+            <b-dropdown-item :to="{ name: 'UserProfile' }">Perfil</b-dropdown-item>
+            <b-dropdown-item href="/logout">Desconectarse</b-dropdown-item>
+            </b-nav-item-dropdown>
+        </b-navbar-nav>
+        </b-collapse>
+    </b-navbar>
+    <div>
       <router-view />
     </div>
   </div>
@@ -67,6 +84,8 @@ export default {
     );
   },
   updated() {
+    if (this.$route.path === '/')
+      this.$router.push(this.$route.fullPath.replace('/#', ''));
     this.$nextTick(function() {
       if (!this.excludedRoute) {
         document.querySelector('#main_container').innerText = '';
@@ -105,6 +124,9 @@ export default {
     logout() {
       this.$store.dispatch('logOut');
       window.location.href = '/logout';
+    },
+    isPath(path) {
+      return this.$route.path === path;
     }
   },
   computed: {
@@ -120,4 +142,12 @@ export default {
     font-size: 2em;
     text-align: center;
   }
+
+  .current-page {
+    color: white !important;
+    font-weight: bold;
+  }
+</style>
+<style>
+  @import '../packs/stylesheets.scss';
 </style>

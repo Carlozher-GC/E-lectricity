@@ -267,8 +267,8 @@ export default {
 
     .upload-container {
         color: purple;
-        padding-left: 10%;
-        padding-right: 10%;
+        padding-left: 15%;
+        padding-right: 15%;
     }
 
     .upload-file-input {

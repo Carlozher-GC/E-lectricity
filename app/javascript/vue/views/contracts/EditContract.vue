@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="padded-main-container">
         <br>
         <h1 style="color: purple">Editar contrato</h1>
         <div>
@@ -329,9 +329,7 @@ export default {
     }
 }
 </script>
-<style>
-    @import '../../../packs/stylesheets.scss';
-
+<style scoped>
     small {
         font-size: 70% !important;
     }

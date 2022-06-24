@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="padded-main-container">
         <div>
             <b-alert :show="error !== ''" variant="danger">{{ error }}</b-alert>
         </div>
@@ -234,9 +234,7 @@ export default {
     }
 }
 </script>
-<style>
-    @import '../../../packs/stylesheets.scss';
-
+<style scoped>
     .contract-controls {
         bottom: 15px;
         position: absolute;

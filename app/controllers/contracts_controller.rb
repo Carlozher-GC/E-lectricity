@@ -86,6 +86,24 @@ class ContractsController < ApplicationController
         end
     end
 
+    # GET /contract_cities
+    def cities
+        contracts = Contract.all
+        contracts = contracts.where("building_city LIKE ?", "#{params[:query]}%") if params[:query].present?
+        render json: {
+            cities: contracts.pluck(:building_city).uniq.compact
+        }
+    end
+
+    # GET /contract_companies
+    def companies
+        contracts = Contract.all
+        contracts = contracts.where("company_name LIKE ?", "#{params[:query]}%") if params[:query].present?
+        render json: {
+            companies: contracts.pluck(:company_name).uniq.compact
+        }
+    end
+
     private
 
     def set_contract

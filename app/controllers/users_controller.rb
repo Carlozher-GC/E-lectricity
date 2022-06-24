@@ -43,6 +43,15 @@ class UsersController < ApplicationController
 
     end
 
+    # GET /user_countries
+    def countries
+        users = User.all
+        users = users.where("country LIKE ?", "#{params[:query]}%") if params[:query].present?
+        render json: {
+            countries: users.pluck(:country).uniq.compact
+        }
+    end
+
     private
 
     def set_user
@@ -60,7 +69,10 @@ class UsersController < ApplicationController
                                      :phone,
                                      :enabled,
                                      :preferences,
-                                     :encrypted_password)
+                                     :encrypted_password,
+                                     :encrypted_password_confirmation,
+                                     :birthday,
+                                     :country)
     end
 
 end
