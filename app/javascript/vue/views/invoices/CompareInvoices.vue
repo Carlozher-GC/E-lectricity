@@ -18,6 +18,7 @@
                         placeholder="Selecciona un contrato"
                         :allow-empty="false"
                         :loading="contracts === null"
+                        @input="changeContract"
                     />
                     <br>
                 </b-col>
@@ -80,7 +81,7 @@
                     </b-col>
                     <b-col cols="12" class="compact-slider">
                         <br>
-                        <p class="gray-label" style="margin-left: -8%; margin-bottom: 20px;">
+                        <p class="gray-label slider-label">
                             Edad del propietari@
                             <br>
                         </p>
@@ -216,7 +217,7 @@
                     </b-col>
                     <b-col cols="12" class="compact-slider">
                         <br>
-                        <p class="gray-label" style="margin-left: -8%; margin-bottom: 20px;">
+                        <p class="gray-label slider-label">
                             Superficie del edificio
                             <br>
                         </p>
@@ -240,7 +241,102 @@
                     </b-col>
                 </b-row>
                 <b-row v-else class="filter-inputs-row">
-
+                    <b-col cols="12" class="compact-slider">
+                        <br>
+                        <p class="gray-label slider-label">
+                            Consumo de energía
+                            <br>
+                        </p>
+                        <vue-slider
+                            id="energy-consumption-filter"
+                            v-model="currentFilter.consumedEnergyRange"
+                            :min="0"
+                            :max="300000"
+                            :min-range="5000"
+                            :tooltip-placement="['bottom', 'top']"
+                            :enable-cross="false"
+                            :tooltip="'always'"
+                            :use-keyboard="false"
+                        >
+                            <template v-slot:tooltip="{ value, focus }">
+                                <div :class="['custom-tooltip', { focus }]">
+                                    {{ `${value} kWh` }}
+                                </div>
+                            </template>
+                        </vue-slider>
+                    </b-col>
+                    <b-col cols="12" class="compact-slider">
+                        <br>
+                        <p class="gray-label slider-label">
+                            Coste total
+                            <br>
+                        </p>
+                        <vue-slider
+                            id="total-price-filter"
+                            v-model="currentFilter.totalPriceRange"
+                            :min="0"
+                            :max="1000"
+                            :min-range="20"
+                            :tooltip-placement="['bottom', 'top']"
+                            :enable-cross="false"
+                            :tooltip="'always'"
+                            :use-keyboard="false"
+                        >
+                            <template v-slot:tooltip="{ value, focus }">
+                                <div :class="['custom-tooltip', { focus }]">
+                                    {{ `${value} €` }}
+                                </div>
+                            </template>
+                        </vue-slider>
+                    </b-col>
+                    <b-col cols="12" class="compact-slider">
+                        <br>
+                        <p class="gray-label slider-label">
+                            Coste energía consumida
+                            <br>
+                        </p>
+                        <vue-slider
+                            id="consumed-energy-price-filter"
+                            v-model="currentFilter.consumedEnergyPriceRange"
+                            :min="0"
+                            :max="800"
+                            :min-range="15"
+                            :tooltip-placement="['bottom', 'top']"
+                            :enable-cross="false"
+                            :tooltip="'always'"
+                            :use-keyboard="false"
+                        >
+                            <template v-slot:tooltip="{ value, focus }">
+                                <div :class="['custom-tooltip', { focus }]">
+                                    {{ `${value} €` }}
+                                </div>
+                            </template>
+                        </vue-slider>
+                    </b-col>
+                    <b-col cols="12" class="compact-slider">
+                        <br>
+                        <p class="gray-label slider-label">
+                            Coste potencia contratada
+                            <br>
+                        </p>
+                        <vue-slider
+                            id="contracted-power-price-filter"
+                            v-model="currentFilter.contractedPowerPriceRange"
+                            :min="0"
+                            :max="500"
+                            :min-range="10"
+                            :tooltip-placement="['bottom', 'top']"
+                            :enable-cross="false"
+                            :tooltip="'always'"
+                            :use-keyboard="false"
+                        >
+                            <template v-slot:tooltip="{ value, focus }">
+                                <div :class="['custom-tooltip', { focus }]">
+                                    {{ `${value} €` }}
+                                </div>
+                            </template>
+                        </vue-slider>
+                    </b-col>
                 </b-row>
             </div>
             <b-row class="filters-controls">
@@ -253,14 +349,84 @@
                     >Actualizar filtro</b-button>
                     <b-button
                         class="outline-purple"
-                        @click="addFilter"
-                    >Añadir filtro</b-button>
+                        @click="resetFilter"
+                    >Resetear filtro</b-button>
                 </b-col>
             </b-row>
         </div>
-        <div class="charts-container">
-            <div>
-                <b-alert :show="error !== ''" variant="danger">{{ error }}</b-alert>
+        <div class="display-container">
+            <div class="display-header">
+                <h3 style="margin-top: 20px">
+                    Comparando por {{ 
+                        chartOptions.field.label + ` (${this.determineFieldUnit(chartOptions.field.name)})`
+                    }}
+                </h3>
+            </div>
+            <div class="charts-container">
+                <div>
+                    <b-alert :show="error !== ''" variant="danger" dismissible>{{ error }}</b-alert>
+                </div>
+                <div v-if="emptyContract" class="invoices-missing">
+                    No se encontró ninguna factura que mostrar.
+                </div>
+                <div v-else style="height: 98%">
+                    <b-overlay :show="loadingInvoices" rounded="sm" style="height: 98%">
+                        <div style="height: 98%">
+                            <LineChart
+                                :labels="months"
+                                :datasets="chartData"
+                                style="height: 98%"
+                            />
+                        </div>
+                    </b-overlay>
+                </div>
+            </div>
+            <div class="display-footer">
+                <b-row style="margin: 0 !important">
+                    <b-col cols="4"></b-col>
+                    <b-col cols="3" class="chart-pagination">
+                        <p
+                            class="h4 mb-2 btn show-button page-button"
+                            :style="
+                                nextChartPageEnabled() ?
+                                'color: purple' : 'color: gray; border-color: white !important'
+                            "
+                            @click="nextChartPage()"
+                        >
+                            <b-icon
+                                icon="arrow-left-circle"
+                            ></b-icon>
+                        </p>
+                        <b style="font-size: 1.4rem; color: purple">
+                            {{ availableYears[currentYearIndex] }}
+                        </b>
+                        <p
+                            class="h4 mb-2 btn show-button page-button"
+                            :style="
+                                previousChartPageEnabled() ?
+                                'color: purple' : 'color: gray; border-color: white !important'
+                            "
+                            @click="previousChartPage()"
+                        >
+                            <b-icon
+                                icon="arrow-right-circle"
+                            ></b-icon>
+                        </p>
+                    </b-col>
+                    <b-col cols="5">
+                        <multiselect
+                            v-model="chartOptions.field"
+                            :options="filterableFields"
+                            open-direction="top"
+                            label="label"
+                            track-by="name"
+                            :searchable="false"
+                            :show-labels="false"
+                            placeholder="Seleccionar opción"
+                            style="width: 60%"
+                        />
+                    </b-col>
+                </b-row>
             </div>
         </div>
     </div>
@@ -284,26 +450,75 @@ export default {
             filterSection: 'user',
             currentFilter: null,
             filters: [],
+            currentDataset: null,
             contracts: null,
             contract: null,
+            loadingInvoices: false,
+            invoices: [],
             userCountries: [],
             isLoadingCountries: false,
             contractCities: [],
             isLoadingCities: false,
             contractCompanies: [],
             isLoadingCompanies: false,
+            months: [],
+            fieldsByUnit: {},
+            availableYears: [],
+            currentYearIndex: 0,
+            chartOptions: { 
+                field: { name: 'total_price', label: 'Precio total' }
+            },
+            filterableFields: [
+                { name: 'total_price', label: 'Precio total' }, 
+                { name: 'current_energy_consumption', label: 'Energía consumida' }, 
+                { name: 'contracted_power_price', label: 'Coste potencia contratada' },
+                { name: 'consumed_energy_price', label: 'Coste energía consumida' }
+            ],
         }
     },
     mounted() {
         this.currentFilter = this.newFilter();
         this.fetchData();
     },
+    computed: {
+        chartData: function() {
+            const field = this.chartOptions.field.name;
+            const year = this.availableYears[this.currentYearIndex]
+            
+            const datasets = [ 
+                {
+                    label: this.contract.name,
+                    backgroundColor: '#800080',
+                    borderColor: '#9932CC',
+                    tension: 0.4,
+                    fill: false,
+                    data: this.pluckCurrentYearInvoicesBy(field)
+                }
+            ];
+            if (this.currentDataset)
+                datasets.push({
+                    label: 'Contratos filtrados',
+                    backgroundColor: '#659CD7',
+                    borderColor: '#618FC1',
+                    tension: 0.4,
+                    fill: false,
+                    data: this.currentDataset[year][field]
+                });
+            
+            return datasets;
+        },
+        emptyContract: function () {
+            return !this.loadingInvoices && (!this.invoices || this.invoices.length < 1)
+        }
+    },
     methods: {
         async fetchData() {
             axios.defaults.headers.common["X-CSRF-Token"] = document
                 .querySelector('meta[name="csrf-token"]')
                 .getAttribute('content');
-            this.fetchContracts();
+            await this.fetchContracts();
+            this.loadingInvoices = true;
+            if (this.contract) this.fetchInvoices();
         },
         async fetchContracts() {
             try {    
@@ -313,6 +528,43 @@ export default {
             } catch (error) {
                 this.error = error;
             }
+        },
+        async fetchInvoices() {
+            try {
+                const params = { contract_id: this.contract.id };
+                const response = await axios.get('/invoices', { params });
+                if (response.data.success == 'true') {
+                    this.invoices = response.data.invoices;
+                    this.fieldsByUnit = response.data.fields_by_unit;
+                    this.months = response.data.months;
+                    this.pluckAvailableYears().forEach(year => this.availableYears.push(year));
+                    this.availableYears.sort((year1, year2) => {
+                        if (parseInt(year1) < parseInt(year2)) return 1;
+                        if (parseInt(year1) > parseInt(year2)) return -1;
+                        return 0;
+                    });
+                } else {
+                    this.error = response.data.reason.message;
+                }
+            } catch (error) {
+                this.error = error;
+            }
+            this.loadingInvoices = false;
+        },
+        async updateCurrentFilter() {
+            this.loadingInvoices = true;
+            try {
+                const params = { filter: this.currentFilter, years: this.availableYears };
+                const response = await axios.get('/invoices_dataset', { params });
+                if (response.data.success == 'true') {
+                    this.currentDataset = response.data.dataset;
+                } else {
+                    this.error = response.data.reason.message;
+                }
+            } catch (error) {
+                this.error = error;
+            }
+            this.loadingInvoices = false;
         },
         async findUserCountries(query) {
             if (query === '') return;
@@ -356,11 +608,44 @@ export default {
                     this.isLoadingCities = false;
                 });
         },
-        updateCurrentFilter() {
-
+        pluckCurrentYearInvoicesBy(field) {
+            const currentYear = this.availableYears[this.currentYearIndex];
+            const currentYearInvoices = new Array(11).fill(NaN);
+            this.invoices.forEach((invoice) => {
+                const releaseDate = new Date(invoice.invoice_release_date);
+                if (releaseDate.getFullYear() === currentYear) 
+                    currentYearInvoices[releaseDate.getMonth()] = invoice[field];
+            });
+            return currentYearInvoices;
         },
-        addFilter() {
-
+        pluckAvailableYears() {
+            return new Set(this.invoices.map(
+                invoice => new Date(invoice['invoice_release_date']).getFullYear()
+            ));
+        },
+        changeContract(contract, id) {
+            this.loadingInvoices = true;
+            this.contract = contract;
+            this.fetchInvoices();
+        },
+        nextChartPage() {
+            if (this.nextChartPageEnabled()) {
+                this.currentYearIndex++;
+            }
+        },
+        previousChartPage() {
+            if (this.previousChartPageEnabled()) {
+                this.currentYearIndex--;
+            }
+        },
+        nextChartPageEnabled() {
+            return this.currentYearIndex < this.availableYears.length - 1;
+        },
+        previousChartPageEnabled() {
+            return this.currentYearIndex > 0;
+        },
+        resetFilter() {
+            this.currentFilter = this.newFilter();
         },
         newFilter() {
             return {
@@ -370,7 +655,11 @@ export default {
                 contractCities: [],
                 startDate: null,
                 endDate: null,
-                surfaceRange: [0, 500]
+                surfaceRange: [0, 500],
+                consumedEnergyRange: [0, 300000],
+                totalPriceRange: [0, 1000],
+                contractedPowerPriceRange: [0, 500],
+                consumedEnergyPriceRange: [0, 800]
             }
         },
         clearUserCountries() {
@@ -390,6 +679,14 @@ export default {
         },
         citiesLimitText(count) {
             return `y ${count} ciudades más`;
+        },
+        determineFieldUnit(field) {
+            for (const [unit, fields] of Object.entries(this.fieldsByUnit)) {
+                if (fields.indexOf(field) > -1) {
+                    return unit;
+                }
+            } 
+            return '';
         },
     }
 }
@@ -423,7 +720,7 @@ export default {
         top: 4rem;
         z-index: 1;
         height: calc(100vh - 4rem);
-        border-right: 1px solid rgba(0,0,0,.1);
+        border-right: 2px solid rgba(0,0,0,.1);
         border-bottom: 0!important;
         order: 0;
         flex: 0 0 30%;
@@ -433,8 +730,41 @@ export default {
         padding-left: 15px;
     }
 
+    .display-container {
+        max-width: 70%;
+        width: 100%;
+        color: purple;
+    }
+
+    .display-header {
+        width: 100%;
+        position: sticky;
+        z-index: 1;
+        border-bottom: 2px solid rgba(0,0,0,.1);
+        height: 75px;
+    }
+
+    .display-footer {
+        border-top: 2px solid rgba(0,0,0,.1);
+        position: absolute;
+        bottom: 15px;
+        left: 30%;
+        width: 100%;
+        max-width: 70%;
+        height: 75px;
+        margin: 0;
+        z-index: 1;
+        padding-top: 10px;
+    }
+
     .charts-container {
-        width: 70%;
+        width: 100%;
+        height: calc(100% - 150px);
+        margin: auto;
+        overflow-y: scroll;
+        z-index: 0;
+        padding-right: 15px;
+        padding-left: 15px;
     }
 
     .compact-slider {
@@ -476,6 +806,18 @@ export default {
 
     .filter-inputs-row {
         margin-right: auto;
+    }
+
+    .slider-label {
+        margin-left: -8%; 
+        margin-bottom: 20px;
+    }
+
+    .invoices-missing {
+        color: red;
+        position: absolute;
+        bottom: calc((100% - 5px)/2);
+        right: calc(70%/3);
     }
 </style>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

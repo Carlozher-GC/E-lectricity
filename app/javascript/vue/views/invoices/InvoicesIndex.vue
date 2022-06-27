@@ -508,16 +508,13 @@ export default {
         },
         pluckCurrentYearInvoicesBy(field) {
             const currentYear = this.availableYears[this.currentChartPage];
-            const currentYearInvoices = [];
-            currentYearInvoices[11] = NaN;
-            currentYearInvoices.fill(NaN);
+            const currentYearInvoices = new Array(11).fill(NaN);
             this.invoices.forEach((invoice) => {
                 const releaseDate = new Date(invoice.invoice_release_date);
                 if (releaseDate.getFullYear() === currentYear) 
-                    currentYearInvoices[releaseDate.getMonth()-1] = invoice[field];
+                    currentYearInvoices[releaseDate.getMonth()] = invoice[field];
             });
-            if (currentYearInvoices.some((value) => Number.isNaN(value)))
-                this.missingInvoices = true;
+            this.missingInvoices = currentYearInvoices.some((value) => Number.isNaN(value));
             return currentYearInvoices;
         },
         pluckAvailableYears() {

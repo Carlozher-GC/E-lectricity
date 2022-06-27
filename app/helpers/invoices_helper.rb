@@ -42,4 +42,8 @@ module InvoicesHelper
     def get_month(month)
         MONTHS[month]
     end
+
+    def calculate_field_average(invoices, field)
+        (invoices.sum(0.0) { |invoice| invoice[field] })/invoices.length
+    end
 end

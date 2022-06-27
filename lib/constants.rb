@@ -63,7 +63,7 @@ INVOICE_FIELDS_IN_SPANISH = {
     marketer_cost_price: 'Coste del vendedor',
     contracted_power_rate: 'Tarifa potencia contratada',
     access_toll_energy_rate: 'Tarifa de la energía del peaje',
-    access_toll_energy_price: 'Coste de la engergía del peaje',
+    access_toll_energy_price: 'Coste de la energía del peaje',
     energy_cost_rate: 'Tasa de coste de la energía',
     energy_cost_price: 'Precio del coste de la energía',
     energy_rate: 'Tasa de energía',

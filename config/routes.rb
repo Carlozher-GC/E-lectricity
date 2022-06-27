@@ -16,6 +16,7 @@ Rails.application.routes.draw do
   resources :invoices, except: %i[new create]
   post '/read_invoice',               to: 'invoices#new',                   as: 'read_invoice'
   post '/upload_invoice',             to: 'invoices#create',                as: 'upload_invoice'
+  get '/invoices_dataset',            to: 'invoices#dataset'
 
   # Paths related to sessions
   get '/login',                       to: 'sessions#new',                   as: 'login'
