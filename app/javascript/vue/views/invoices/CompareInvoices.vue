@@ -372,7 +372,7 @@
                 <div v-else style="height: 98%">
                     <b-overlay :show="loadingInvoices" rounded="sm" style="height: 98%">
                         <div style="height: 98%">
-                            <LineChart
+                            <BarChart
                                 :labels="months"
                                 :datasets="chartData"
                                 style="height: 98%"
@@ -436,13 +436,13 @@
 import axios from 'axios';
 import Multiselect from "vue-multiselect";
 import VueSlider from 'vue-slider-component';
-import LineChart from '../../components/LineChart.vue';
+import BarChart from '../../components/BarChart.vue';
 
 export default {
     components: {
         Multiselect,
         VueSlider,
-        LineChart,
+        BarChart,
     },
     data() {
         return {
