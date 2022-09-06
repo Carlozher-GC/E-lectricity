@@ -40,10 +40,10 @@
                         class="overflow-hidden"
                     >
                         <b-row no-gutters style="height: 100%">
-                            <b-col md="6" v-if="loadingImages">
+                            <b-col style="width: 331px" v-if="loadingImages">
                                 <b-skeleton-img animation="fade" no-aspect height="331" width="331" />
                             </b-col>
-                            <b-col md="6" v-else-if="contract.images && contract.images.length > 0">
+                            <b-col style="width: 331px" v-else-if="contract.images && contract.images.length > 0">
                                 <b-carousel
                                     style="text-shadow: 0px 0px 2px #000"
                                     fade
@@ -59,7 +59,7 @@
                                     />
                                 </b-carousel>
                             </b-col>
-                            <b-col md="6" v-else>
+                            <b-col style="width: 331px" v-else>
                                 <div
                                     class="btn show-button"
                                     style="height: 100%; width: 100%"
@@ -99,7 +99,7 @@
                                     </template>
                                 </b-modal>
                             </b-col>
-                            <b-col md="6">
+                            <b-col style="width: calc(100% - 331px)">
                                 <b-card-title style="color: purple; padding-top: 13px">
                                     {{ `${contract.name} (${contract.building_surface} m2)` }}
                                     <hr />
@@ -134,6 +134,36 @@
                                             ></b-icon>
                                         </router-link>
                                     </div>
+                                </div>
+                            </b-col>
+                        </b-row>
+                    </b-card>
+                </b-col>
+                <b-col
+                    cols="6"
+                    style="margin-bottom: 15px"
+                >
+                    <b-card
+                        style="width: 100%; height: 331px; max-width: 100%; max-height: 331px"
+                        no-body
+                        class="overflow-hidden"
+                    >
+                        <b-row no-gutters style="height: 100%">
+                            <b-col @click="$router.push({ name: 'NewContract' })">
+                                <div
+                                    class="btn show-button"
+                                    style="height: 100%; width: 100%; font-size: 20px; color: purple"
+                                >
+                                    <p
+                                        class="add-image" 
+                                    >
+                                    Añadir contrato
+                                    <b-icon
+                                        icon="plus-circle-fill"
+                                        aria-hidden="true"
+                                        style="color: purple"
+                                    ></b-icon>
+                                    </p>
                                 </div>
                             </b-col>
                         </b-row>
@@ -254,8 +284,7 @@ export default {
     }
 
     .sized-image {
-        object-fit: cover;
-        width: 331px;
-        height: 331px;
+        width: 100%;
+        height: 100%;
     }
 </style>

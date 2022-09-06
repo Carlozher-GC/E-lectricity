@@ -12,6 +12,8 @@ class Contract < ApplicationRecord
     validates :building_postal_code, presence: true
     validates :building_city, presence: true
 
+    validate :name_unique?
+
      # Check that the user doesn´t repeat the name of a contract
      def name_unique?
         if user.contracts.find_by(name: name).present?

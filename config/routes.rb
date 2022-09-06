@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
-  root to: 'sessions#new'
+  root to: 'sessions#index'
+  get '/e-lectricity',                to: 'sessions#index'
 
   # Paths related to contracts    
   get '/contracts',                   to: 'contracts#index',                as: 'contracts_index'

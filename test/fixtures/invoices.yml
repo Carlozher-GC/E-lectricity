@@ -1,9 +1,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  invoice_number: MyString
+  invoice_number: one
   invoice_reference: MyString
-  invoice_release_data: MyString
+  invoice_release_date: 2022-03-12 23:40:31
   start_billing_date: 2022-03-12 23:40:31
   end_billing_date: 2022-03-12 23:40:31
   total_billing_days: 1
@@ -36,11 +36,12 @@ one:
   reduced_tax_rate: 1
   reduced_tax_price: 1
   total_plus_tax: 1
+  contract_id: 1
 
 two:
-  invoice_number: MyString
+  invoice_number: two
   invoice_reference: MyString
-  invoice_release_data: MyString
+  invoice_release_date: 2022-03-12 23:40:31
   start_billing_date: 2022-03-12 23:40:31
   end_billing_date: 2022-03-12 23:40:31
   total_billing_days: 1
@@ -73,3 +74,4 @@ two:
   reduced_tax_rate: 1
   reduced_tax_price: 1
   total_plus_tax: 1
+  contract_id: 2

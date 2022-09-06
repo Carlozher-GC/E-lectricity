@@ -14,10 +14,17 @@ class ContractsController < ApplicationController
 
     # GET /contracts
     def show
-        render json: {
-            success: 'true',
-            contract: Contract.find(params[:id])
-        }
+        if @contract.user_id == session[:user_id]
+            render json: {
+                success: 'true',
+                contract: @contract
+            }
+        else
+            render json: {
+                success: 'false',
+                reason: ACCESS_DENIED_ERROR
+            }
+        end
     end
 
     # POST /add_contract
@@ -62,7 +69,7 @@ class ContractsController < ApplicationController
                 render json: { success: 'false', reason: ATTACH_IMAGE_ERROR, details: e }
             end
         else
-            render json: { success: 'false', reason: BAD_PARAMETERS }
+            render json: { success: 'false', reason: BAD_PARAMETERS_ERROR }
         end
     end
 
@@ -82,14 +89,14 @@ class ContractsController < ApplicationController
                 render json: { success: 'false', reason: READ_IMAGE_ERROR, details: e }
             end
         else
-            render json: { success: 'false', reason: BAD_PARAMETERS }
+            render json: { success: 'false', reason: BAD_PARAMETERS_ERROR }
         end
     end
 
     # GET /contract_cities
     def cities
         contracts = Contract.all
-        contracts = contracts.where("building_city LIKE ?", "#{params[:query]}%") if params[:query].present?
+        contracts = contracts.where("building_city LIKE ?", "%#{params[:query]}%") if params[:query].present?
         render json: {
             cities: contracts.pluck(:building_city).uniq.compact
         }
@@ -98,7 +105,7 @@ class ContractsController < ApplicationController
     # GET /contract_companies
     def companies
         contracts = Contract.all
-        contracts = contracts.where("company_name LIKE ?", "#{params[:query]}%") if params[:query].present?
+        #contracts = contracts.where("company_name LIKE ?", "#{params[:query]}%") if params[:query].present?
         render json: {
             companies: contracts.pluck(:company_name).uniq.compact
         }

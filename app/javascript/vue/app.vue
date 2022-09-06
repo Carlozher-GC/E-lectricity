@@ -65,6 +65,7 @@ export default {
       excludedRoutes: [
           '/login',
           '/register',
+          '/e-lectricity'
       ],
       interval: null,
     }

@@ -1,7 +1,8 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
+  id: 1
+  name: one
   start_date: 2022-06-10 16:27:06
   end_date: 2022-06-10 16:27:06
   company_name: MyString
@@ -9,9 +10,11 @@ one:
   building_number: MyString
   building_postal_code: MyString
   building_city: MyString
+  user_id: 1
 
 two:
-  name: MyString
+  id: 2
+  name: two
   start_date: 2022-06-10 16:27:06
   end_date: 2022-06-10 16:27:06
   company_name: MyString
@@ -19,3 +22,4 @@ two:
   building_number: MyString
   building_postal_code: MyString
   building_city: MyString
+  user_id: 2

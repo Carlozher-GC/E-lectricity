@@ -1,4 +1,6 @@
-BAD_PARAMETERS = { code: 0.1, message: 'Bad parameters' }.freeze
+BAD_PARAMETERS_ERROR = { code: 0.1, message: 'Bad parameters' }.freeze
+
+ACCESS_DENIED_ERROR = { code: 0.2, message: 'Access denied' }.freeze
 
 INCORRECT_CREDENTIALS_ERROR = { code: 1.1, message: 'The introduced credentials are incorrect' }.freeze
 

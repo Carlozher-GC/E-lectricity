@@ -5,8 +5,9 @@ class User < ApplicationRecord
 
     validates :first_name, presence: true
     validates :last_name, presence: true
-    validates :email, presence: true
+    validates :email, presence: true, uniqueness: true
     validates :birthday, presence: true
+    validates :country, presence: true
     validates :encrypted_password, presence: true
 
     validates_confirmation_of :encrypted_password

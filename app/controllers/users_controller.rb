@@ -46,7 +46,7 @@ class UsersController < ApplicationController
     # GET /user_countries
     def countries
         users = User.all
-        users = users.where("country LIKE ?", "#{params[:query]}%") if params[:query].present?
+        users = users.where("country LIKE ?", "%#{params[:query]}%") if params[:query].present?
         render json: {
             countries: users.pluck(:country).uniq.compact
         }

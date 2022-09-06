@@ -1,5 +1,5 @@
-# For executing, run "rails runner generate_specific_data.rb"
-# The script will create one user, one contracts, and invoices between 2009 and 2021 for the contracts.
+# For executing, run "rails runner scripts/generate_specific_data.rb"
+# The script will create one user, one contract, and invoices between 2009 and 2021 for the contracts.
 
 SECONDS_IN_A_YEAR = 365 * 24 * 60 * 60
 
@@ -35,13 +35,13 @@ end
 
 def generate_specific_contract(user_id)
     {
-        name: "Casa en Las Palmas",
+        name: "Casa en Fene",
         start_date: Date.parse('01-01-2008'),
-        company_name: 'Iberdrola',
-        building_address: "Calle del mal despertar",
-        building_number: "21",
+        company_name: 'Naturgy',
+        building_address: "Calle Karl Marx",
+        building_number: "14",
         building_postal_code: "#{rand(99999)}",
-        building_city: 'Las Palmas',
+        building_city: 'Fene',
         building_surface: 95,
         user_id: user_id
     }
@@ -66,7 +66,8 @@ def generate_random_invoices_for_a_year(year, contract_id)
     end
 end
 
-user = User.new(generate_specific_user)
+#user = User.new(generate_specific_user)
+user = User.find(39)
 
 unless user.save
     puts "The user could not be created: #{user.errors.inspect}"

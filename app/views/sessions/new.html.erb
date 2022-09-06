@@ -1,28 +1,30 @@
-<div class="main-div">
-    <%= form_with url: "/login", method: :post do |form| %>
-        <h1 class="h3 mb-3 fw-normal" style="color: purple">E-lectricity</h1>
-        
-        <div class="login-input-div">
-            <input type="email" class="rounded-input" placeholder="Email" name="email">
-        </div>
-        <div class="login-input-div">
-            <input type="password" class="rounded-input" placeholder="Contraseña" name="password" id="password">
-        </div>
-        <% if @error.present? %>
-        <div>
-            <label for="password" class="error-message" style="margin-bottom: -30px; padding-top: 10px"><%= @error[:message] %></label>
-        </div>
+<div class="container">
+    <div class="main-div">
+        <%= form_with url: "/login", method: :post do |form| %>
+            <h1 class="h3 mb-3 fw-normal" style="color: purple">E-lectricity</h1>
+            
+            <div class="login-input-div">
+                <input type="email" class="rounded-input" placeholder="Email" name="email">
+            </div>
+            <div class="login-input-div">
+                <input type="password" class="rounded-input" placeholder="Contraseña" name="password" id="password">
+            </div>
+            <% if @error.present? %>
+            <div>
+                <label for="password" class="error-message" style="margin-bottom: -30px; padding-top: 10px"><%= @error[:message] %></label>
+            </div>
+            <% end %>
+            <div class="login-input-div" style="height: 30%; padding-top: 30px">
+                <button class="rounded-button" type="submit">Log in</button>
+            </div>
         <% end %>
-        <div class="login-input-div" style="height: 30%; padding-top: 30px">
-            <button class="rounded-button" type="submit">Log in</button>
-        </div>
-    <% end %>
-    <%= form_with url: "/register", method: :get do |form| %>
-        <div class="login-input-div" style="height: 30%; padding-top: 30px">
-            <p>¿No tienes cuenta?</p>
-            <button class="rounded-button" type="submit">Registrarse</button>
-        </div>
-    <% end %>
+        <%= form_with url: "/register", method: :get do |form| %>
+            <div class="login-input-div" style="height: 30%; padding-top: 30px">
+                <p>¿No tienes cuenta?</p>
+                <button class="rounded-button" type="submit">Registrarse</button>
+            </div>
+        <% end %>
+    </div>
 </div>
 
 <style>

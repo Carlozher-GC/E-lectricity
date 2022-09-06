@@ -1,7 +1,7 @@
 require 'errors'
 
 class SessionsController < ApplicationController
-    skip_before_action :authenticated?, only: %i[new create logout session_expiracy_time]
+    skip_before_action :authenticated?, only: %i[new create logout index session_expiracy_time]
 
     include SessionsHelper
 
@@ -40,6 +40,8 @@ class SessionsController < ApplicationController
             success: 'false', reason: SESSION_EXPIRED_ERROR
         }
     end
+
+    def index; end
 
     private
 

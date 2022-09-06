@@ -1,62 +1,71 @@
-<div class="main-div">
-    <%= form_for @user, url: '/register', method: :post do |form| %>
-        <h1 class="h3 mb-3 fw-normal" style="color: purple">E-lectricity</h1>
-        <%= render 'shared/error_messages', object: form.object %>
+<div class="container">
+    <div class="main-div">
+        <%= form_for @user, url: '/register', method: :post do |form| %>
+            <h1 class="h3 mb-3 fw-normal" style="color: purple">E-lectricity</h1>
+            <%= render 'shared/error_messages', object: form.object %>
 
-        <div class="row">
-            <div class="column">
-                <p>Nombre:</p>
-                <%= form.text_field :first_name, class: 'rounded-input', placeholder: 'Nombre' %>
+            <div class="row">
+                <div class="column">
+                    <p>Nombre:</p>
+                    <%= form.text_field :first_name, class: 'rounded-input', placeholder: 'Nombre' %>
+                </div>
+                <div class="column">
+                    <p>Apellidos:</p>
+                    <%= form.text_field :last_name, class: 'rounded-input', placeholder: 'Apellidos' %>
+                </div>
             </div>
-            <div class="column">
-                <p>Apellidos:</p>
-                <%= form.text_field :last_name, class: 'rounded-input', placeholder: 'Apellidos' %>
-            </div>
-        </div>
 
-        <div class="row">
-            <div class="column">
-                <p>Email:</p>
-                <%= form.text_field :email, class: 'rounded-input', placeholder: 'Email' %>
+            <div class="row">
+                <div class="column">
+                    <p>Email:</p>
+                    <%= form.text_field :email, class: 'rounded-input', placeholder: 'Email' %>
+                </div>
+                <div class="column">
+                    <p>Nombre de usuario:</p>
+                    <%= form.text_field :username, class: 'rounded-input', placeholder: 'Nombre de usuario' %>
+                </div>
             </div>
-            <div class="column">
-                <p>Nombre de usuario:</p>
-                <%= form.text_field :username, class: 'rounded-input', placeholder: 'Nombre de usuario' %>
-            </div>
-        </div>
 
-        <div class="row">
-            <div class="column">
-                <p>Fecha de nacimiento:</p>
-                <%= form.date_field :birthday, class: 'rounded-input' %>
+            <div class="row">
+                <div class="column">
+                    <p>Fecha de nacimiento:</p>
+                    <%= form.date_field :birthday, class: 'rounded-input' %>
+                </div>
+                <div class="column">
+                    <p>Teléfono:</p>
+                    <%= form.text_field :phone, class: 'rounded-input', placeholder: 'Teléfono' %>
+                </div>
             </div>
-            <div class="column">
-                <p>Teléfono:</p>
-                <%= form.text_field :phone, class: 'rounded-input', placeholder: 'Teléfono' %>
-            </div>
-        </div>
 
-        <div class="row">
-            <div class="column">
-                <p>Contraseña:</p>
-                <%= form.password_field :encrypted_password, class: 'rounded-input', placeholder: 'Contraseña' %>
+            <div class="row">
+                <div class="column">
+                    <p>Contraseña:</p>
+                    <%= form.password_field :encrypted_password, class: 'rounded-input', placeholder: 'Contraseña' %>
+                </div>
+                <div class="column">
+                    <p>Confirmar contraseña:</p>
+                    <%= form.password_field :encrypted_password_confirmation, class: 'rounded-input', placeholder: 'Confirmar contraseña' %>
+                </div>
             </div>
-            <div class="column">
-                <p>Confirmar contraseña:</p>
-                <%= form.password_field :encrypted_password_confirmation, class: 'rounded-input', placeholder: 'Confirmar contraseña' %>
-            </div>
-        </div>
 
-        <div class="register-input-div" style="height: 30%; padding-top: 30px">
-            <button class="rounded-button" type="submit">Registrarse</button>
-        </div>
-    <% end %>
-    <%= form_with url: "/login", method: :get do |form| %>
-        <div class="register-input-div" style="height: 30%; padding-top: 30px">
-            <b>¿Ya tienes una cuenta?</b>
-            <button class="rounded-button" type="submit">Iniciar sesión</button>
-        </div>
-    <% end %>
+            <div class="row" style="padding-left: 30%; padding-right: 30%;">
+                <div class="column" style="width: 100%;">
+                    <p>País:</p>
+                    <%= form.text_field :country, class: 'rounded-input', placeholder: 'País' %>
+                </div>
+            </div>
+
+            <div class="register-input-div" style="height: 30%; padding-top: 30px">
+                <button class="rounded-button" type="submit">Registrarse</button>
+            </div>
+        <% end %>
+        <%= form_with url: "/login", method: :get do |form| %>
+            <div class="register-input-div" style="height: 30%; padding-top: 30px">
+                <b>¿Ya tienes una cuenta?</b>
+                <button class="rounded-button" type="submit">Iniciar sesión</button>
+            </div>
+        <% end %>
+    </div>
 </div>
 
 <style>

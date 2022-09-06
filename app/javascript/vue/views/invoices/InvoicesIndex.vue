@@ -1,5 +1,8 @@
 <template>
     <div class="padded-main-container">
+        <div>
+            <b-alert :show="error !== ''" variant="danger">{{ error }}</b-alert>
+        </div>
         <div v-if="invoices.length <= 0">
             <br>
             <b-card>
@@ -15,9 +18,6 @@
             </b-card>
         </div>
         <div v-else>
-            <div>
-                <b-alert :show="error !== ''" variant="danger">{{ error }}</b-alert>
-            </div>
             <table class="table borderless">
                 <thead>
                     <tr>
@@ -365,7 +365,9 @@ export default {
             },
             filterableFields: [
                 { name: 'total_price', label: 'Precio total' }, 
-                { name: 'current_energy_consumption', label: 'Energía consumida' }
+                { name: 'current_energy_consumption', label: 'Energía consumida' },
+                { name: 'contracted_power_price', label: 'Precio de la potencia contratada' },
+                { name: 'consumed_energy_price', label: 'Precio de la energía consumida' },
             ],
             showAdvancedFilters: false,
             perPage: 10,
@@ -428,6 +430,7 @@ export default {
                     this.months = response.data.months;
                     this.pluckAvailableYears().forEach(year => this.availableYears.push(year));
                 } else {
+                    console.log(response.data.reason);
                     this.error = response.data.reason.message;
                 }
             } catch (error) {

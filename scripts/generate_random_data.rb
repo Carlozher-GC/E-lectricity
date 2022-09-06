@@ -1,4 +1,4 @@
-# For executing, run "rails runner generate_random_data.rb"
+# For executing, run "rails runner scripts/generate_random_data.rb"
 # The script will create <total_users> users (default 5),
 # <total_contracts> contracts (default 2),
 # and invoices between 2009 and 2021 for every contract.
@@ -17,8 +17,13 @@ end_year = 2021
 @companies = ['Endesa', 'Iberdrola', 'Naturgy', 'TotalEnergies', 'Factor Energía']
 @cities = ['Agüimes', 'Las Palmas', 'Madrid', 'Barcelona', 'Bilbao', 'París', 'Vecindario', 'Ottawa', 'Montreal', 'Buenos Aires']
 
-def random_date(from)
+def random_birthday(from)
     to = Time.now - 18 * SECONDS_IN_A_YEAR
+    Time.at(from + rand * (to.to_f - from.to_f))
+end
+
+def random_date(from)
+    to = Time.now - 2 * SECONDS_IN_A_YEAR
     Time.at(from + rand * (to.to_f - from.to_f))
 end
 
@@ -36,7 +41,7 @@ def generate_random_user
         encrypted_password: 'tfg',
         encrypted_password_confirmation: 'tfg',
         country: @countries[rand(@countries.length-1)],
-        birthday: random_date(Time.now - 100 * SECONDS_IN_A_YEAR)
+        birthday: random_birthday(Time.now - 100 * SECONDS_IN_A_YEAR)
     }
 end
 

@@ -1,27 +1,31 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
+  id: 1
   role: 1
   first_name: MyString
   last_name: MyString
   username: MyString
-  email: MyString
+  email: uno@email.com
   zip_code: MyString
   street: MyString
   phone: MyString
-  enabled: false
+  enabled: true
   preferences: MyText
   encrypted_password: MyString
+  country: test
 
 two:
+  id: 2
   role: 1
   first_name: MyString
   last_name: MyString
   username: MyString
-  email: MyString
+  email: dos@email.com
   zip_code: MyString
   street: MyString
   phone: MyString
   enabled: false
   preferences: MyText
   encrypted_password: MyString
+  country: test

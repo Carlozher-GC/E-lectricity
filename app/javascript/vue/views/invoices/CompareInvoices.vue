@@ -7,18 +7,21 @@
             <b-row class="filters-header">
                 <b-col cols="12">
                     <br>
-                    <p class="filter-label">Mi contrato</p>
+                    <p class="filter-label">Mis contratos</p>
                     <multiselect
-                        v-model="contract"
+                        v-model="selectedContracts"
                         :options="contracts || []"
+                        :multiple="true"
                         label="name"
                         track-by="name"
                         :searchable="false"
                         :show-labels="false"
                         placeholder="Selecciona un contrato"
                         :allow-empty="false"
+                        :max="this.colors.length"
                         :loading="contracts === null"
-                        @input="changeContract"
+                        @select="addContract"
+                        @remove="removeContract"
                     />
                     <br>
                 </b-col>
@@ -157,7 +160,6 @@
                             :max-height="600"
                             :show-no-results="false"
                             :hide-selected="true"
-                            @search-change="findContractCompanies"
                         >
                             <template slot="tag" slot-scope="{ option, remove }">
                                 <span class="custom-tag">
@@ -366,7 +368,7 @@
                 <div>
                     <b-alert :show="error !== ''" variant="danger" dismissible>{{ error }}</b-alert>
                 </div>
-                <div v-if="emptyContract" class="invoices-missing">
+                <div v-if="emptyContracts" class="invoices-missing">
                     No se encontró ninguna factura que mostrar.
                 </div>
                 <div v-else style="height: 98%">
@@ -452,9 +454,9 @@ export default {
             filters: [],
             currentDataset: null,
             contracts: null,
-            contract: null,
+            selectedContracts: [],
             loadingInvoices: false,
-            invoices: [],
+            invoices: {},
             userCountries: [],
             isLoadingCountries: false,
             contractCities: [],
@@ -474,6 +476,7 @@ export default {
                 { name: 'contracted_power_price', label: 'Coste potencia contratada' },
                 { name: 'consumed_energy_price', label: 'Coste energía consumida' }
             ],
+            colors: ['#659CD7', '#F39C38', '#56C435'],
         }
     },
     mounted() {
@@ -485,21 +488,25 @@ export default {
             const field = this.chartOptions.field.name;
             const year = this.availableYears[this.currentYearIndex]
             
-            const datasets = [ 
-                {
-                    label: this.contract.name,
-                    backgroundColor: '#800080',
-                    borderColor: '#9932CC',
+            const datasets = [];
+            let i = 0;
+            for (const contract of this.selectedContracts) {
+                datasets.push({
+                    label: contract.name,
+                    backgroundColor: this.colors[i],
+                    borderColor: this.colors[i],
                     tension: 0.4,
                     fill: false,
-                    data: this.pluckCurrentYearInvoicesBy(field)
-                }
-            ];
+                    data: this.pluckCurrentYearInvoicesBy(field, contract.id)
+                });
+                i += 1;
+            }
+
             if (this.currentDataset)
                 datasets.push({
                     label: 'Contratos filtrados',
-                    backgroundColor: '#659CD7',
-                    borderColor: '#618FC1',
+                    backgroundColor: '#800080',
+                    borderColor: '#9932CC',
                     tension: 0.4,
                     fill: false,
                     data: this.currentDataset[year][field]
@@ -507,7 +514,7 @@ export default {
             
             return datasets;
         },
-        emptyContract: function () {
+        emptyContracts: function () {
             return !this.loadingInvoices && (!this.invoices || this.invoices.length < 1)
         }
     },
@@ -517,32 +524,29 @@ export default {
                 .querySelector('meta[name="csrf-token"]')
                 .getAttribute('content');
             await this.fetchContracts();
+            this.retrieveContractCompanies();
             this.loadingInvoices = true;
-            if (this.contract) this.fetchInvoices();
+            if (this.selectedContracts.length > 0)
+                this.fetchInvoices(this.selectedContracts[0].id);
         },
         async fetchContracts() {
             try {    
                 const response = await axios.get('/contracts');
                 this.contracts = response.data.contracts;
-                this.contract = this.contracts[0];
+                this.selectedContracts.push(this.contracts[0]);
             } catch (error) {
                 this.error = error;
             }
         },
-        async fetchInvoices() {
+        async fetchInvoices(contractID) {
             try {
-                const params = { contract_id: this.contract.id };
+                const params = { contract_id: contractID };
                 const response = await axios.get('/invoices', { params });
                 if (response.data.success == 'true') {
-                    this.invoices = response.data.invoices;
+                    this.invoices[contractID] = response.data.invoices;
                     this.fieldsByUnit = response.data.fields_by_unit;
                     this.months = response.data.months;
-                    this.pluckAvailableYears().forEach(year => this.availableYears.push(year));
-                    this.availableYears.sort((year1, year2) => {
-                        if (parseInt(year1) < parseInt(year2)) return 1;
-                        if (parseInt(year1) > parseInt(year2)) return -1;
-                        return 0;
-                    });
+                    this.determineAvailableYears(contractID);
                 } else {
                     this.error = response.data.reason.message;
                 }
@@ -580,10 +584,9 @@ export default {
                     this.isLoadingCountries = false;
                 });
         },
-        async findContractCompanies(query) {
-            if (query === '') return;
+        async retrieveContractCompanies() {
             this.isLoadingCompanies = true
-            axios.get('/contract_companies', { params: { query } })
+            axios.get('/contract_companies')
                 .then(response => {
                     this.contractCompanies = response.data.companies;
                     this.isLoadingCompanies = false;
@@ -608,25 +611,36 @@ export default {
                     this.isLoadingCities = false;
                 });
         },
-        pluckCurrentYearInvoicesBy(field) {
+        pluckCurrentYearInvoicesBy(field, contractID) {
             const currentYear = this.availableYears[this.currentYearIndex];
             const currentYearInvoices = new Array(11).fill(NaN);
-            this.invoices.forEach((invoice) => {
-                const releaseDate = new Date(invoice.invoice_release_date);
-                if (releaseDate.getFullYear() === currentYear) 
-                    currentYearInvoices[releaseDate.getMonth()] = invoice[field];
-            });
+            if (this.invoices[contractID])
+                this.invoices[contractID].forEach((invoice) => {
+                    const releaseDate = new Date(invoice.invoice_release_date);
+                    if (releaseDate.getFullYear() === currentYear) 
+                        currentYearInvoices[releaseDate.getMonth()] = invoice[field];
+                });
             return currentYearInvoices;
         },
-        pluckAvailableYears() {
-            return new Set(this.invoices.map(
-                invoice => new Date(invoice['invoice_release_date']).getFullYear()
-            ));
+        determineAvailableYears(contractID) {
+            const availableYearsSet = new Set(this.availableYears);
+            this.invoices[contractID].forEach(
+                invoice => availableYearsSet.add(new Date(invoice['invoice_release_date']).getFullYear())
+            );
+            this.availableYears = [];
+            availableYearsSet.forEach(year => this.availableYears.push(year));
+            this.availableYears.sort((year1, year2) => {
+                if (parseInt(year1) < parseInt(year2)) return 1;
+                if (parseInt(year1) > parseInt(year2)) return -1;
+                return 0;
+            });
         },
-        changeContract(contract, id) {
+        addContract(contract, id) {
             this.loadingInvoices = true;
-            this.contract = contract;
-            this.fetchInvoices();
+            this.fetchInvoices(contract.id);
+        },
+        removeContract(contract, id) {
+            delete this.invoices[contract.id];
         },
         nextChartPage() {
             if (this.nextChartPageEnabled()) {

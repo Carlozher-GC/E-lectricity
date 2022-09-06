@@ -35,7 +35,7 @@ class InvoicesController < ApplicationController
                 render json: { success: 'false', reason: READ_INVOICE_ERROR, details: e }
             end
         else
-            render json: { success: 'false', reason: BAD_PARAMETERS }
+            render json: { success: 'false', reason: BAD_PARAMETERS_ERROR }
         end
     end
 
@@ -52,14 +52,18 @@ class InvoicesController < ApplicationController
 
     def index
         if params[:contract_id].present?
-            render json: { 
-                success: 'true',
-                invoices: Invoice.where(contract_id: params[:contract_id]),
-                fields_by_unit: INVOICE_FIELDS_BY_UNIT,
-                months: MONTHS.keys
-            }
+            if Contract.find(params[:contract_id]).user_id == session[:user_id]
+                render json: { 
+                    success: 'true',
+                    invoices: Invoice.where(contract_id: params[:contract_id]),
+                    fields_by_unit: INVOICE_FIELDS_BY_UNIT,
+                    months: MONTHS.keys
+                }
+            else
+                render json: { success: 'false', reason: ACCESS_DENIED_ERROR }
+            end
         else
-            render json: { success: 'false', reason: BAD_PARAMETERS }
+            render json: { success: 'false', reason: BAD_PARAMETERS_ERROR }
         end
     end
 
@@ -90,7 +94,7 @@ class InvoicesController < ApplicationController
         else
             render json: {
                 success: 'false',
-                reason: BAD_PARAMETERS
+                reason: BAD_PARAMETERS_ERROR
             }
         end
     end
@@ -153,7 +157,7 @@ class InvoicesController < ApplicationController
         contracts = contracts.where(company_name: contract_companies) if contract_companies.length > 0
         contracts = contracts.where(building_city: contract_cities) if contract_cities.length > 0
         contracts = contracts.where('start_date >= ?', start_date) if start_date.present?
-        contracts = contracts.where('end_date >= ?', end_date) if end_date.present?
+        contracts = contracts.where('end_date <= ?', end_date) if end_date.present?
         contracts.where("building_surface BETWEEN #{surface_range[0]} AND #{surface_range[1]}").pluck(:id)
     end
     
